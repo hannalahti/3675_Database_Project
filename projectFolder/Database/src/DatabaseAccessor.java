@@ -26,9 +26,110 @@ public class DatabaseAccessor {
 
     private static final String ENJOYS_GENRE_COLLECTION = "Enjoys";
     private final String BELONGS = "Belongs";
+    private final String WATCHED_COLLECTION = "Watched";
+    private final String LIKES_COLLECTION = "Likes";
 
 
+    public boolean insertLikedGenre(String genreName) {
+        if(findLikedGenre().contains(genreName)) {
+            return true;
+        };
+        MongoCollection<Document> collection = database.getCollection(ENJOYS_GENRE_COLLECTION);
+        Document doc1 = new Document("user_id", user_id).append("genre_name", genreName);
+        try {
+            collection.insertOne(doc1);
+            return true;
+        }
+        catch(Exception e) {
+            return false;
+        }
+    }
+    public ArrayList<String> findLikedGenre() {
 
+        MongoCollection<Document> collection = database.getCollection(ENJOYS_GENRE_COLLECTION);
+        Bson onlyForThisUser = Filters.eq("user_id", user_id);
+        Bson onlyNames = Projections.fields(
+                Projections.include("genre_name"),
+                Projections.excludeId());
+        ArrayList<String> docList = new ArrayList<String>();
+        collection.find(onlyForThisUser).projection(onlyNames).limit(20)
+                .forEach((Block<? super Document>) doc -> docList.add(doc.toString()));
+
+        for(int i = 0; i < docList.size(); i++) {
+            docList.set(i, docList.get(i).replaceAll("Document\\{\\{genre_name=",""));
+            docList.set(i, docList.get(i).replaceAll("}}","") );
+        }
+
+        return docList;
+    }
+
+    public boolean insertLikedMedia(String movieTitle) {
+        if(findLikedMedia().contains(movieTitle)) {
+            return true;
+        };
+        String likedMedia = findMedia(movieTitle).getFirst();
+        MongoCollection<Document> collection = database.getCollection(LIKES_COLLECTION);
+        Document doc1 = new Document("user_id", user_id).append("movie_title", likedMedia);
+        try {
+            collection.insertOne(doc1);
+            return true;
+        }
+        catch(Exception e) {
+            return false;
+        }
+    }
+    public ArrayList<String> findLikedMedia() {
+
+        MongoCollection<Document> collection = database.getCollection(LIKES_COLLECTION);
+        Bson onlyForThisUser = Filters.eq("user_id", user_id);
+        Bson onlyNames = Projections.fields(
+                Projections.include("movie_title"),
+                Projections.excludeId());
+        ArrayList<String> docList = new ArrayList<String>();
+        collection.find(onlyForThisUser).projection(onlyNames).limit(20)
+                .forEach((Block<? super Document>) doc -> docList.add(doc.toString()));
+
+        for(int i = 0; i < docList.size(); i++) {
+            docList.set(i, docList.get(i).replaceAll("Document\\{\\{movie_title=",""));
+            docList.set(i, docList.get(i).replaceAll("}}","") );
+        }
+
+        return docList;
+    }
+
+    public boolean insertWatchedMedia(String movieTitle) {
+        if(findWatchedMedia().contains(movieTitle)) {
+            return true;
+        };
+        String watchedMedia = findMedia(movieTitle).getFirst();
+        MongoCollection<Document> collection = database.getCollection(WATCHED_COLLECTION);
+        Document doc1 = new Document("user_id", user_id).append("movie_title", watchedMedia);
+        try {
+            collection.insertOne(doc1);
+            return true;
+        }
+        catch(Exception e) {
+            return false;
+        }
+    }
+    public ArrayList<String> findWatchedMedia() {
+
+        MongoCollection<Document> collection = database.getCollection(WATCHED_COLLECTION);
+        Bson onlyForThisUser = Filters.eq("user_id", user_id);
+        Bson onlyNames = Projections.fields(
+                Projections.include("movie_title"),
+                Projections.excludeId());
+        ArrayList<String> docList = new ArrayList<String>();
+        collection.find(onlyForThisUser).projection(onlyNames).limit(20)
+                .forEach((Block<? super Document>) doc -> docList.add(doc.toString()));
+
+        for(int i = 0; i < docList.size(); i++) {
+            docList.set(i, docList.get(i).replaceAll("Document\\{\\{movie_title=",""));
+            docList.set(i, docList.get(i).replaceAll("}}","") );
+        }
+
+        return docList;
+    }
     public ArrayList<String> findMedia(String media_name) {
         MongoCollection<Document> collection = database.getCollection(MEDIA_COLLECTION);
         Bson mediaFinder = Filters.regex("movie_title", media_name);
@@ -127,6 +228,9 @@ public class DatabaseAccessor {
         for (String name : list) {
             System.out.println(name);
         }
-
+        //MongoIterable<Document> col = database.getCollection(MEDIA_COLLECTION).find().limit(20);
+        //for (Document name : col) {
+            //System.out.println(name);
+        //}
     }
 }
