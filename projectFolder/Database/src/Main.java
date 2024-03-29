@@ -57,18 +57,24 @@ public class Main extends Application {
 
         System.out.printf("%n%nSearch Watched Media Example %n");
         boolean reults = db.insertWatchedMedia("Black Sheep");
+        reults = db.insertWatchedMedia("The Switchman's Tower");
+        db.deleteWatchedMedia("The Switchman's Tower");
         for(String i : db.findWatchedMedia()) {
             System.out.printf("%s %n", i);
         }
 
         System.out.printf("%n%nSearch Liked Media Example %n");
         reults = db.insertLikedMedia("The Merchant of Venice");
+        reults = db.insertLikedMedia("The Little Teacher");
+        reults = db.deleteLikedMedia("The Little Teacher");
         for(String i : db.findLikedMedia()) {
             System.out.printf("%s %n", i);
         }
 
         System.out.printf("%n%nSearch Liked Genres Example %n");
         reults = db.insertLikedGenre("short");
+        reults = db.insertLikedGenre("documentary");
+        reults = db.deleteLikedGenre("documentary");
         for(String i : db.findLikedGenre()) {
             System.out.printf("%s %n", i);
         }

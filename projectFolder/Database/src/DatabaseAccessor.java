@@ -44,6 +44,25 @@ public class DatabaseAccessor {
             return false;
         }
     }
+    public boolean deleteLikedGenre(String genreName) {
+        if(findLikedGenre().contains(genreName)) {
+            MongoCollection<Document> collection = database.getCollection(ENJOYS_GENRE_COLLECTION);
+            Bson onlyForThisUser = Filters.eq("user_id", user_id);
+            Bson onlyThisMedia = Filters.eq("genre_name", genreName);
+            Bson removeQuery = Filters.and(onlyForThisUser, onlyThisMedia);
+            try {
+                collection.deleteOne(removeQuery);
+                return true;
+            }
+            catch(Exception e) {
+                return false;
+            }
+        }
+        else {
+            return true;
+        }
+
+    }
     public ArrayList<String> findLikedGenre() {
 
         MongoCollection<Document> collection = database.getCollection(ENJOYS_GENRE_COLLECTION);
@@ -78,6 +97,25 @@ public class DatabaseAccessor {
             return false;
         }
     }
+    public boolean deleteLikedMedia(String movieTitle) {
+        if(findLikedMedia().contains(movieTitle)) {
+            MongoCollection<Document> collection = database.getCollection(LIKES_COLLECTION);
+            Bson onlyForThisUser = Filters.eq("user_id", user_id);
+            Bson onlyThisMedia = Filters.eq("movie_title", movieTitle);
+            Bson removeQuery = Filters.and(onlyForThisUser, onlyThisMedia);
+            try {
+                collection.deleteOne(removeQuery);
+                return true;
+            }
+            catch(Exception e) {
+                return false;
+            }
+        }
+        else {
+            return true;
+        }
+
+    }
     public ArrayList<String> findLikedMedia() {
 
         MongoCollection<Document> collection = database.getCollection(LIKES_COLLECTION);
@@ -111,6 +149,25 @@ public class DatabaseAccessor {
         catch(Exception e) {
             return false;
         }
+    }
+    public boolean deleteWatchedMedia(String movieTitle) {
+        if(findWatchedMedia().contains(movieTitle)) {
+            MongoCollection<Document> collection = database.getCollection(WATCHED_COLLECTION);
+            Bson onlyForThisUser = Filters.eq("user_id", user_id);
+            Bson onlyThisMedia = Filters.eq("movie_title", movieTitle);
+            Bson removeQuery = Filters.and(onlyForThisUser, onlyThisMedia);
+            try {
+                collection.deleteOne(removeQuery);
+                return true;
+            }
+            catch(Exception e) {
+                return false;
+            }
+        }
+        else {
+            return true;
+        }
+
     }
     public ArrayList<String> findWatchedMedia() {
 
@@ -232,5 +289,6 @@ public class DatabaseAccessor {
         //for (Document name : col) {
             //System.out.println(name);
         //}
+
     }
 }
