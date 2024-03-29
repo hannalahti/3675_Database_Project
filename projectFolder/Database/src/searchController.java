@@ -13,6 +13,9 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ListView;
@@ -24,6 +27,7 @@ import javafx.scene.control.SplitMenuButton;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
+import javafx.stage.Stage;
 import javafx.util.converter.NumberStringConverter;
 
 public class searchController {
@@ -295,12 +299,12 @@ public class searchController {
 
     @FXML
     void logoutLinkPressed(ActionEvent event) {
-
+        switchWindow(event, "login.fxml");
     }
 
     @FXML
     void myShowsLinkPressed(ActionEvent event) {
-
+        switchWindow(event, "myShows.fxml");
     }
 
     /*
@@ -312,7 +316,6 @@ public class searchController {
         createFormatCheckList();
         bindTextFieldWithSlider();
         bindAllCheckBoxes();
-        other();
 
         mediaListView.getSelectionModel().selectedItemProperty().addListener((ObservableValue<? extends String>ov, String old_val, String new_val)->{
             showSelectedMedia(mediaListView.getSelectionModel().getSelectedItem());
@@ -410,30 +413,13 @@ public class searchController {
         });
     }
 
-    void otherother(CheckBox a, CheckBox b) {
-        a.selectedProperty().addListener((obs, wasSelected, isNowSelected) -> {
-            if (isNowSelected) {
-                b.setSelected(false);
-            }
-        });
-
-        b.selectedProperty().addListener((obs, wasSelected, isNowSelected) -> {
-            if (isNowSelected) {
-                a.setSelected(false);
-            }
-        });
-    }
-
     void bindAllCheckBoxes() {
 
         for(int i=0; i<genreCheckBoxes.size(); i++)
             bindCheckBox(anyGenreCheckBox, genreCheckBoxes.get(i));
 
-    }
-
-    void other() {
         for(int i=0; i<formatCheckBoxes.size(); i++)
-            otherother(anyFormatCheckBox, formatCheckBoxes.get(i));
+            bindCheckBox(anyFormatCheckBox, formatCheckBoxes.get(i));
     }
 
     /*
@@ -504,5 +490,18 @@ public class searchController {
         genreCheckBoxes.add(warGenreCheckBox);
         genreCheckBoxes.add(westernGenreCheckBox);
         genreCheckBoxes.add(horrorGenreCheckBox);
+    }
+    private Stage stage;
+    private Parent root;
+    public void switchWindow(ActionEvent event, String filename){
+        try {
+            stage = (Stage) searchButton.getScene().getWindow();
+            root = FXMLLoader.load(getClass().getResource(filename));
+            Scene scene = new Scene(root);
+            stage.setScene(scene);
+            stage.show();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }

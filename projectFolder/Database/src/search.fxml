@@ -61,7 +61,7 @@
                 <Menu fx:id="logoutLink" mnemonicParsing="false" onAction="#logoutLinkPressed" text="Logout" />
                 <Menu fx:id="settingsLink" mnemonicParsing="false" onAction="#settingsLinkPressed" text="Settings" />
                 <Menu fx:id="myShowsLink" mnemonicParsing="false" onAction="#myShowsLinkPressed" text="My Shows" />
-                <Menu fx:id="searchLink" mnemonicParsing="false" onAction="#searchLinkPressed" text="Search" />
+                <Menu fx:id="searchLink" disable="true" mnemonicParsing="false" onAction="#searchLinkPressed" text="Search" />
             </menus>
             <padding>
                 <Insets bottom="4.0" left="4.0" top="4.0" />

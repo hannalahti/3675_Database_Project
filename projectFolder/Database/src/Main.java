@@ -4,9 +4,6 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
-import com.mongodb.client.model.Filters;
-import org.bson.Document;
-import org.bson.conversions.Bson;
 
 public class Main extends Application {
 
@@ -33,7 +30,7 @@ public class Main extends Application {
     @Override
     public void start(Stage stage) throws Exception {
 
-        Parent root = FXMLLoader.load(getClass().getResource("login.fxml"));
+        Parent root = FXMLLoader.load(getClass().getResource("myShows.fxml"));
 
         Scene scene = new Scene(root);
         stage.setTitle("Media");
@@ -43,7 +40,7 @@ public class Main extends Application {
 
     public static void main(String[] args) {
 
-        connectDB();
+        //connectDB();
         launch(args);
 
     }

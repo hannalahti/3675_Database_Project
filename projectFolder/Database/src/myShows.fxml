@@ -1,0 +1,241 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+  Copyright (c) 2015, 2019, Gluon and/or its affiliates.
+  All rights reserved. Use is subject to license terms.
+
+  This file is available and licensed under the following license:
+
+  Redistribution and use in source and binary forms, with or without
+  modification, are permitted provided that the following conditions
+  are met:
+
+  - Redistributions of source code must retain the above copyright
+    notice, this list of conditions and the following disclaimer.
+  - Redistributions in binary form must reproduce the above copyright
+    notice, this list of conditions and the following disclaimer in
+    the documentation and/or other materials provided with the distribution.
+  - Neither the name of Oracle Corporation nor the names of its
+    contributors may be used to endorse or promote products derived
+    from this software without specific prior written permission.
+
+  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+  LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+  A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+  OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+  SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+  LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+  DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+  THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+  OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+-->
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.Menu?>
+<?import javafx.scene.control.MenuBar?>
+<?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.ProgressIndicator?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.SplitMenuButton?>
+<?import javafx.scene.control.Tab?>
+<?import javafx.scene.control.TabPane?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+<?import javafx.scene.text.Text?>
+
+<VBox prefHeight="538.0" prefWidth="712.0" style="-fx-background-color: #fff;" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="MyShowsController">
+  <children>
+    <MenuBar prefWidth="700.0" VBox.vgrow="NEVER">
+      <menus>
+            <Menu fx:id="logoutLink" mnemonicParsing="false" onAction="#logoutLinkPressed" text="Logout" />
+        <Menu fx:id="settingsLink" mnemonicParsing="false" onAction="#settingsLinkPressed" text="Settings" />
+            <Menu fx:id="myShowsLink" disable="true" mnemonicParsing="false" onAction="#myShowsLinkPressed" text="My Shows" />
+            <Menu fx:id="searchLink" mnemonicParsing="false" onAction="#searchLinkPressed" text="Search" />
+      </menus>
+         <padding>
+            <Insets bottom="4.0" left="4.0" top="4.0" />
+         </padding>
+    </MenuBar>
+      <TabPane fx:id="tabPane" prefHeight="59.0" prefWidth="712.0" tabClosingPolicy="UNAVAILABLE">
+        <tabs>
+          <Tab fx:id="likedMenu" text="Liked" />
+          <Tab fx:id="watchedMenu" text="Watched" />
+            <Tab text="Recommended">
+              <content>
+                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
+              </content>
+            </Tab>
+        </tabs>
+      </TabPane>
+    <AnchorPane fx:id="searchAnchorPage" maxHeight="-1.0" maxWidth="-1.0" prefHeight="463.0" prefWidth="712.0" style="-fx-background-color: #202020;">
+      <children>
+            <GridPane layoutX="-1.0" layoutY="2.0" prefHeight="474.0" prefWidth="446.0">
+              <columnConstraints>
+                <ColumnConstraints hgrow="SOMETIMES" />
+                <ColumnConstraints hgrow="SOMETIMES" />
+                  <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+              </columnConstraints>
+              <rowConstraints>
+                <RowConstraints vgrow="SOMETIMES" />
+                <RowConstraints minHeight="10.0" vgrow="SOMETIMES" />
+              </rowConstraints>
+               <children>
+                  <TextField fx:id="searchTextField" GridPane.valignment="CENTER">
+                     <GridPane.margin>
+                        <Insets left="15.0" top="15.0" />
+                     </GridPane.margin>
+                  </TextField>
+                  <Button fx:id="searchButton" mnemonicParsing="false" onAction="#searchButtonPressed" text="Search" GridPane.columnIndex="1" GridPane.halignment="LEFT" GridPane.valignment="CENTER">
+                     <GridPane.margin>
+                        <Insets left="8.0" top="15.0" />
+                     </GridPane.margin>
+                  </Button>
+                  <ScrollPane prefHeight="338.0" style="-fx-background-color: #000000;" GridPane.columnSpan="3" GridPane.rowIndex="1">
+                    <content>
+                      <AnchorPane minHeight="0.0" minWidth="0.0" prefWidth="399.0" style="-fx-background-color: #000000;">
+                           <children>
+                              <ListView fx:id="mediaListView" prefHeight="400.0" prefWidth="414.0" />
+                              <ProgressIndicator fx:id="loadingIndicator" layoutX="181.0" layoutY="163.0" visible="false" />
+                           </children>
+                        </AnchorPane>
+                    </content>
+                     <GridPane.margin>
+                        <Insets bottom="15.0" left="15.0" right="4.0" />
+                     </GridPane.margin>
+                  </ScrollPane>
+                  <SplitMenuButton fx:id="sortMenu" alignment="CENTER" minWidth="-Infinity" mnemonicParsing="false" text="Sort" textAlignment="RIGHT" GridPane.columnIndex="2" GridPane.halignment="RIGHT">
+                    <items>
+                      <MenuItem fx:id="sortAlphabetical" mnemonicParsing="false" text="Alphabetical" />
+                      <MenuItem fx:id="sortRatingHigh" mnemonicParsing="false" text="Rating: high to low" />
+                        <MenuItem fx:id="sortRatingLow" mnemonicParsing="false" text="Rating: low to high" />
+                        <MenuItem fx:id="sortYearNewest" mnemonicParsing="false" text="Year: newest" />
+                        <MenuItem fx:id="sortYearOldest" mnemonicParsing="false" text="Year: oldest" />
+                        <MenuItem fx:id="sortRuntimeLongest" mnemonicParsing="false" text="Runtime: longest" />
+                        <MenuItem fx:id="sortRuntimeShortest" mnemonicParsing="false" text="Runtime: shortest" />
+                    </items>
+                     <GridPane.margin>
+                        <Insets right="4.0" top="15.0" />
+                     </GridPane.margin>
+                  </SplitMenuButton>
+               </children>
+            </GridPane>
+            <GridPane layoutX="473.0" layoutY="81.0" prefHeight="330.0" prefWidth="200.0">
+              <columnConstraints>
+                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="115.0" />
+                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                  <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+              </columnConstraints>
+              <rowConstraints>
+                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                  <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                  <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                  <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+              </rowConstraints>
+               <children>
+                  <Text fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" text="Title:">
+                     <font>
+                        <Font name="Arial Rounded MT Bold" size="15.0" />
+                     </font>
+                  </Text>
+                  <Text fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" text="Year:" GridPane.rowIndex="1">
+                     <font>
+                        <Font name="Arial Rounded MT Bold" size="15.0" />
+                     </font>
+                  </Text>
+                  <Text fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" text="Runtime:" GridPane.rowIndex="2">
+                     <font>
+                        <Font name="Arial Rounded MT Bold" size="15.0" />
+                     </font>
+                  </Text>
+                  <Text fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" text="Format:" GridPane.rowIndex="3">
+                     <font>
+                        <Font name="Arial Rounded MT Bold" size="15.0" />
+                     </font>
+                  </Text>
+                  <Text fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" text="Genre:" GridPane.rowIndex="4">
+                     <font>
+                        <Font name="Arial Rounded MT Bold" size="15.0" />
+                     </font>
+                  </Text>
+                  <Text fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" text="Rating:" GridPane.rowIndex="5">
+                     <font>
+                        <Font name="Arial Rounded MT Bold" size="15.0" />
+                     </font>
+                  </Text>
+                  <Text fx:id="yearText" fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" GridPane.columnIndex="1" GridPane.rowIndex="1">
+                     <font>
+                        <Font name="Arial Rounded MT Bold" size="13.0" />
+                     </font>
+                  </Text>
+                  <Text fx:id="runtimeText" fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" GridPane.columnIndex="1" GridPane.rowIndex="2">
+                     <font>
+                        <Font name="Arial Rounded MT Bold" size="13.0" />
+                     </font>
+                  </Text>
+                  <Text fx:id="formatText" fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" GridPane.columnIndex="1" GridPane.rowIndex="3">
+                     <font>
+                        <Font name="Arial Rounded MT Bold" size="13.0" />
+                     </font>
+                  </Text>
+                  <Text fx:id="ratingText" fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" GridPane.columnIndex="1" GridPane.rowIndex="5">
+                     <font>
+                        <Font name="Arial Rounded MT Bold" size="13.0" />
+                     </font>
+                  </Text>
+                  <AnchorPane minWidth="-Infinity" prefHeight="41.0" prefWidth="80.0" GridPane.columnIndex="1" GridPane.columnSpan="2">
+                     <children>
+                        <Text fx:id="titleText" fill="WHITE" layoutY="11.0" strokeType="OUTSIDE" strokeWidth="0.0" wrappingWidth="152.517333984375">
+                           <font>
+                              <Font name="Arial Rounded MT Bold" size="13.0" />
+                           </font>
+                        </Text>
+                     </children>
+                     <GridPane.margin>
+                        <Insets top="22.0" />
+                     </GridPane.margin>
+                  </AnchorPane>
+                  <AnchorPane minWidth="-Infinity" prefHeight="30.0" prefWidth="126.0" GridPane.columnIndex="1" GridPane.rowIndex="4">
+                     <children>
+                        <Text fx:id="genreText" fill="WHITE" layoutY="11.0" strokeType="OUTSIDE" strokeWidth="0.0" wrappingWidth="126.40000000000009">
+                           <font>
+                              <Font name="Arial Rounded MT Bold" size="13.0" />
+                           </font>
+                        </Text>
+                     </children>
+                     <GridPane.margin>
+                        <Insets top="22.0" />
+                     </GridPane.margin>
+                  </AnchorPane>
+               </children>
+            </GridPane>
+            <HBox fx:id="buttonBox" layoutX="472.0" layoutY="424.0" prefHeight="54.0" prefWidth="242.0" visible="false">
+               <children>
+                  <Button fx:id="likeButton" mnemonicParsing="false" onAction="#likeButtonPressed" prefHeight="8.0" prefWidth="30.0" style="-fx-background-color: #fc3434;" stylesheets="@myCss.css" />
+                  <Text fx:id="likeText" fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" text="Liked">
+                     <HBox.margin>
+                        <Insets left="10.0" top="4.0" />
+                     </HBox.margin>
+                  </Text>
+                  <Button fx:id="watchedButton" alignment="CENTER_RIGHT" mnemonicParsing="false" onAction="#watchedButtonPressed" style="-fx-background-color: #7402c4;" text="Watched" textFill="WHITE">
+                     <HBox.margin>
+                        <Insets left="40.0" />
+                     </HBox.margin>
+                  </Button>
+               </children>
+            </HBox>
+      </children>
+    </AnchorPane>
+  </children>
+</VBox>
