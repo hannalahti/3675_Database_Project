@@ -5,6 +5,8 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 
+import java.util.ArrayList;
+
 public class Main extends Application {
 
     static String DATABASE_NAME = "DatabaseProject";
@@ -41,6 +43,15 @@ public class Main extends Application {
     public static void main(String[] args) {
 
         //connectDB();
+        DatabaseAccessor db = new DatabaseAccessor();
+
+        //System.out.printf("Said's UserID: %d %n", db.registerUser("said", "123"));
+        //System.out.printf("Hanna's UserID: %d %n", db.registerUser("hanna", "123"));
+        //System.out.printf("Lois' UserID: %d %n", db.registerUser("lois", "123"));
+        ArrayList<String> c = db.findMedia("c");
+        for(String i : c) {
+            System.out.printf("%s %n", i);
+        }
         launch(args);
 
     }

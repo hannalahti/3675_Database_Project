@@ -2,24 +2,19 @@
 import static com.mongodb.client.model.Filters.eq;
 
 import com.mongodb.Block;
+import com.mongodb.client.*;
 import com.mongodb.client.model.Filters;
 import org.bson.Document;
 import org.bson.conversions.Bson;
-import com.mongodb.client.MongoClient;
-import com.mongodb.client.MongoClients;
-import com.mongodb.client.MongoCollection;
-import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.Projections;
-import com.mongodb.client.model.Sorts;
-import org.bson.types.ObjectId;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Random;
 
 public class DatabaseAccessor {
 
 
+    long user_id = -1;
     private MongoClient mongoClient;
     private static MongoDatabase database;
     private final String DATABASE_NAME = "DatabaseProject";
@@ -32,15 +27,41 @@ public class DatabaseAccessor {
     private static final String ENJOYS_GENRE_COLLECTION = "Enjoys";
     private final String BELONGS = "Belongs";
 
-    public static int findUser(String username, String password) {
+
+
+    public ArrayList<String> findMedia(String media_name) {
+        MongoCollection<Document> collection = database.getCollection(MEDIA_COLLECTION);
+        Bson mediaFinder = Filters.regex("movie_title", media_name);
+        Bson onlyNames = Projections.fields(
+                Projections.include("movie_title"),
+                Projections.excludeId());
+        ArrayList<String> docList = new ArrayList<String>();
+        collection.find(mediaFinder).projection(onlyNames).limit(20)
+                .forEach((Block<? super Document>) doc -> docList.add(doc.toString()));
+
+        for(int i = 0; i < docList.size(); i++) {
+            docList.set(i, docList.get(i).replaceAll("Document\\{\\{movie_title=",""));
+            docList.set(i, docList.get(i).replaceAll("}}","") );
+        }
+
+        return docList;
+    }
+
+    public long findUser(String username, String password) {
+
         MongoCollection<Document> collection = database.getCollection(USERS_COLLECTION);
+        if(collection == null) {
+            return -1;
+        }
         Bson filter = Filters.and(
                 Filters.eq("username", username),
                 Filters.eq("password", password)
         );
+
         Document doc = collection.find(filter).first();
         if (doc != null) {
-            Integer i = doc.getInteger("user_id");
+            Long i = doc.getLong("user_id");
+            user_id = i;
             return i;
         }
         else {
@@ -49,20 +70,35 @@ public class DatabaseAccessor {
         }
     }
 
-    public static int registerUser(String username, String password) {
+    public long registerUser(String username, String password) {
+        if(findUser(username, password) != -1) {
+            return findUser(username, password);
+        }
+
         MongoCollection<Document> collection = database.getCollection(USERS_COLLECTION);
+        long gen_user_id = 0;
+        try {
+            gen_user_id = collection.countDocuments() + 1;
+        }
+        catch(Exception e) {
+            System.out.printf("could not count %n");
+            System.out.printf("%s", e);
+        }
 
-        Random rand = new Random();
-        int upperbound = Integer.MAX_VALUE;
-        // >2 billion, if it doesn't insert then either astronomical odds or DB is full
-        int int_random = rand.nextInt(upperbound);
-
+        System.out.printf("user id gen : %d %n", gen_user_id);
         Document doc1 = new Document
                 ("username", username)
                 .append("password", password)
-                .append("user_id", int_random);
-        collection.insertOne(doc1);
-        int user_id = findUser(username, password);
+                .append("user_id", gen_user_id);
+        try {
+            collection.insertOne(doc1);
+        }
+        catch(Exception e) {
+            System.out.printf("attempted to insert and failed %n");
+            return -1;
+        }
+
+        user_id = findUser(username, password);
         if(user_id >= 0) {
             return user_id;
         }
@@ -71,54 +107,26 @@ public class DatabaseAccessor {
             return -1;
         }
     }
-
-    public static String[] findEnjoyedGenres(int user_id) {
-        MongoCollection<Document> collection = database.getCollection(ENJOYS_GENRE_COLLECTION);
-        Bson filter = Filters.eq("user_id", user_id);
-        Bson projection = Projections.fields(Projections.include("genre_name"));
-
-        ArrayList<String> docList = new ArrayList<String>();
-        collection.find(filter)
-                .projection(projection)
-                .forEach((Block<? super Document>) doc -> docList.add(doc.toString()));
-
-        return (String[]) docList.toArray();
-    }
-    public static boolean enjoysGenre(int user_id, String genreName) {
-        MongoCollection<Document> collection = database.getCollection(ENJOYS_GENRE_COLLECTION);
-        Document doc = new Document("user_id", user_id).append("genre_name", genreName);
-        collection.insertOne(doc);
-
-        if(Arrays.asList( findEnjoyedGenres(user_id) ).contains(genreName) == true) {
-            return true;
-        }
-        else {
-            System.out.println("could not insert new enjoyed genre");
-            return false;
-        }
-    }
-
-    public static String[] findWatchedMedia(int user_id) {
-        String[] s = {};
-        return s;
-    }
-
-    /*
-        public Document[] recommendationGenerator(int user_id) {
-            // if we have an index for media newer than 2005, search that
-            String[] genres = findEnjoyedGenres(user_id);
-            String[] watched = findWatchedMedia(user_id);
-
-            MongoCollection<Document> collection = database.getCollection(BELONGS);
-
-        }
-    */
     public DatabaseAccessor() {
-        try (MongoClient mongoClient = MongoClients.create(URI)) {
+
+        try  {
+            mongoClient = MongoClients.create(URI);
             database = mongoClient.getDatabase(DATABASE_NAME);
         }
         catch(Exception e) {
-            System.out.printf("Could not connect to database %n");
+            System.out.println("Could not connect to the database");
         }
+
+        if(database==null) {
+            System.out.println("No database found");
+            return;
+        }
+        else
+            System.out.println("Success!");
+        MongoIterable<String> list = database.listCollectionNames();
+        for (String name : list) {
+            System.out.println(name);
+        }
+
     }
 }

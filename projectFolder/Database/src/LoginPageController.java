@@ -61,11 +61,11 @@ public class LoginPageController {
     void login() {
         String username = usernameTextField.getText();
         String password = passwordTextField.getText();
-
-		if(DatabaseAccessor.findUser(username, password)==-1){
-			showErrors();
-			return;
-		}
+        // for now, you need to make an instance of the DatabaseAcessor
+		//if(DatabaseAccessor.findUser(username, password)==-1){
+			//showErrors();
+			//return;
+		//}
 
 
         System.out.println("login successful");
