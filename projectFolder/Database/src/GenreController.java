@@ -377,11 +377,8 @@ public class GenreController extends Controller{
 
         for(int i=0; i< likedGenres.size(); i++){
             int index = findIndex(likedGenres.get(i),genres);
-            if (index!=-1) {
+            if (index!=-1)
                 setHeartButton(genreButtons.get(index), true);
-                break;
-            }
-
         }
     }
 

@@ -501,6 +501,8 @@ public class MyShowsController extends Controller{
     void setRecommendedList(){
         menu="recommended";
         sort="default";
+        searchButton.setVisible(false);
+        searchTextField.setVisible(false);
         //ObservableList<String> recommendedList = FXCollections.observableArrayList( someFunctionToGetRecommendedStringArrayList() )
         //mediaListView.setItems(recommendedList);
     }
@@ -517,6 +519,8 @@ public class MyShowsController extends Controller{
     void setWatchedList(){
         menu="watched";
         sort="default";
+        searchButton.setVisible(false);
+        searchTextField.setVisible(false);
         ObservableList<String> watchedList = FXCollections.observableArrayList(DatabaseAccessor.db.findWatchedMedia());
         mediaListView.setItems(watchedList);
     }
@@ -559,17 +563,35 @@ public class MyShowsController extends Controller{
     Showing information on individual selected media
      */
     void setMediaView(String title){
-        ArrayList<String> info = DatabaseAccessor.db.findDetails(title);
-
+        System.out.println(selected);
+        ArrayList<String> info = DatabaseAccessor.db.findDetails(selected);
+        if(info==null)
+            return;
+        for(int i=0;i<info.size();i++)
+            System.out.println(info.get(i));
+        System.out.println(info.get(0));
         titleText.setText(info.get(0));
-        yearText.setText(info.get(6));
+        System.out.println(info.get(1));
+
         runtimeText.setText(info.get(1));
+        System.out.println(info.get(2));
+
         formatText.setText(info.get(2));
-        ratingText.setText(info.get(5));
+        System.out.println(info.get(3));
 
         buttonBox.setVisible(true);
-        setLikedButton(info.get(4));
         setWatchedButton(info.get(3));
+        System.out.println(info.get(4));
+
+        setLikedButton(info.get(4));
+        System.out.println(info.get(5));
+
+        ratingText.setText(info.get(5));
+        System.out.println(info.get(6));
+
+        yearText.setText(info.get(6));
+        System.out.println(info.get(7));
+
 
         String genres = info.get(7);
         //concatenating all genres into one string
