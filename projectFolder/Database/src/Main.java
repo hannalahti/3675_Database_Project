@@ -53,10 +53,13 @@ public class Main extends Application {
         for(String i : c) {
             System.out.printf("%s %n", i);
         }
-        db.findUser("said", "1234");
+        db.findUser("said", "123");
 
         System.out.printf("%n%nSearch Watched Media Example %n");
-        boolean reults = db.insertWatchedMedia("Black Sheep");
+        boolean reults = db.insertWatchedMedia("YouTubers React to Don't Hug Me I'm Scared");
+        reults = db.insertWatchedMedia("Welcome Obama");
+        reults = db.insertWatchedMedia("Barbie: A Touch of Magic");
+        reults = db.insertWatchedMedia("Back to the Future: Back in Time Video Slots");
         reults = db.insertWatchedMedia("The Switchman's Tower");
         db.deleteWatchedMedia("The Switchman's Tower");
         for(String i : db.findWatchedMedia()) {
@@ -81,6 +84,12 @@ public class Main extends Application {
 
         System.out.printf("%n%nSearch Media Sorted Example %n");
         c = db.findMediaSorted("c", "alpha");
+        for(String i : c) {
+            System.out.printf("%s %n", i);
+        }
+
+        System.out.printf("%n%nSearch Watched Sorted Example %n");
+        c = db.findWatchedMediaSorted("c", "alpha");
         for(String i : c) {
             System.out.printf("%s %n", i);
         }

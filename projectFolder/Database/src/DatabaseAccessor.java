@@ -345,6 +345,97 @@ public class DatabaseAccessor {
             return -1;
         }
     }
+
+    public ArrayList<String> findWatchedMediaSorted(String mediaName, String sorting) {
+        boolean isAscend = sortWhichWay(sorting);
+        String  sortCriteria = sortCriteria(sorting);
+
+        Bson sort = null;
+
+        if(sortCriteria.equals("_id")) {
+            sort = Aggregates.sort(Sorts.ascending("movie_title"));
+        }
+        else {
+            if (isAscend) {
+                sort = Aggregates.sort(Sorts.ascending(sortCriteria));
+            }
+            if (!isAscend) {
+                sort = Aggregates.sort(Sorts.descending(sortCriteria));
+
+            }
+        }
+
+        MongoCollection<Document> c = database.getCollection(PRODUCTION_COLLECTION);
+
+        Bson mediaFinder = Filters.regex("movie_title", mediaName);
+        Bson onlyForThisUser = Filters.eq("user_id", user_id);
+        Bson onlyNames = Projections.fields(
+                Projections.include("movie_title"),
+                Projections.excludeId());
+
+        Bson combineToProd = Aggregates
+                .lookup(MEDIA_COLLECTION, "movie_id", "movie_id", "media");
+        Bson out = Aggregates.out("media_production");
+        Bson sizeLimiter = Aggregates.limit(20);
+        Bson mediaFinds = Aggregates.match(mediaFinder);
+        Document replaceRootStage = new Document("$replaceRoot",
+                new Document("newRoot",
+                        new Document("$mergeObjects",
+                                Arrays.asList(
+                                        new Document("$arrayElemAt", Arrays.asList("$media", 0)),
+                                        "$$ROOT"
+                                )
+                        )
+                )
+        );
+        Document unwindStage = new Document("$unwind", "$media");
+        Bson combineWatched = Aggregates
+                .lookup(WATCHED_COLLECTION, "movie_title", "movie_title", "watched");
+        Document redoRoot = new Document("$replaceRoot",
+                new Document("newRoot",
+                        new Document("$mergeObjects",
+                                Arrays.asList(
+                                        new Document("$arrayElemAt", Arrays.asList("$media", 0)),
+                                        new Document("$arrayElemAt", Arrays.asList("$watched", 0)),
+                                        "$$ROOT"
+                                )
+                        )
+                )
+        );
+        Bson usersWatched = Aggregates.match(onlyForThisUser);
+
+        List<Document> results = c.aggregate(
+                Arrays.asList(
+                        combineToProd,
+                        //unwindStage,
+                        replaceRootStage,
+                        combineWatched,
+                        redoRoot,
+                        mediaFinds,
+                        usersWatched,
+                        sort,
+                        //sizeLimiter,
+                        out) ).into(new ArrayList<>());
+
+        ArrayList<String> docList = new ArrayList<String>();
+        for(Document i: results) {
+            try {
+                //System.out.printf("%s %n", i.get("user_id"));
+
+                String s = (String) i.get("movie_title");
+                    docList.add((String) i.get("movie_title"));
+                    //System.out.printf("%s %n", i);
+
+
+            }
+            catch(Exception e) {}
+
+        }
+
+
+        return docList;
+    }
+
     public DatabaseAccessor() {
 
         try  {
