@@ -598,14 +598,22 @@ public class DatabaseAccessor {
         else
             details.add("false");
         System.out.printf("join tables? %s %n", movieName);
-        Document results = mediaAndProductionJoin(movieName, "alpha", 2).getFirst();
-        System.out.printf("%s %n", results);
-
-        details.add((String) results.get("avg_rating").toString());
-        details.add( (String) results.get("year").toString() );
-
+        String movieID = (String) doc.get("movie_id");
+        List<Document> r = new ArrayList<>();
+        database.getCollection(PRODUCTION_COLLECTION)
+                .find( Filters.eq("movie_id", movieID) ).into(r);
+        try {
+            Document results = r.getFirst();
+            System.out.printf("%s %n", results);
+            details.add((String) results.get("avg_rating").toString());
+            details.add( (String) results.get("year").toString() );
+        }
+        catch(Exception e) {
+            details.add("unknown");
+            details.add("unknown");
+        }
         MongoCollection<Document> c = database.getCollection(BELONGS);
-        Bson belongs = Filters.regex("movie_id", (String) results.get("movie_id"));
+        Bson belongs = Filters.regex("movie_id", movieID);
         List<Document> belongsList = new ArrayList<Document>();
         c.find(belongs)
                 .into(belongsList);
