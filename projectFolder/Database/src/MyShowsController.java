@@ -23,7 +23,6 @@ import static java.lang.String.valueOf;
 
 public class MyShowsController extends Controller{
 
-
     @FXML
     private CheckBox actionGenreCheckBox;
 
@@ -292,6 +291,9 @@ public class MyShowsController extends Controller{
     String search;
     String selected;
 
+    /*
+    applying selected filters
+     */
     @FXML
     void applyButtonPressed(ActionEvent event) {
 
@@ -314,7 +316,6 @@ public class MyShowsController extends Controller{
                 runtimeFrom, runtimeTo, ratingFrom, ratingTo));
     }
 
-
     @FXML
     void likeButtonPressed(ActionEvent event) {
         setLikedButton(valueOf(!isLiked));
@@ -331,7 +332,7 @@ public class MyShowsController extends Controller{
     @FXML
     void searchButtonPressed(ActionEvent event) {
         loadingIndicator.setVisible(true);
-        String search = searchTextField.getText();
+        search = searchTextField.getText();
         ObservableList<String> media = FXCollections.observableArrayList(super.db.findMedia(search));
         mediaListView.setItems(media);
         loadingIndicator.setVisible(false);
@@ -339,7 +340,6 @@ public class MyShowsController extends Controller{
     @FXML
     void settingsButtonPressed(ActionEvent event) {
         super.switchWindow(event, "genres.fxml", settingsButton);
-
     }
 
     @FXML
@@ -356,8 +356,8 @@ public class MyShowsController extends Controller{
         createFormatCheckList();
         bindTextFieldWithSlider();
         bindAllCheckBoxes();
-
         setSearchPage();
+
         menu="search";
         sort="default";
 
@@ -374,6 +374,7 @@ public class MyShowsController extends Controller{
         tabPane.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<Tab>(){
             @Override
             public void changed(ObservableValue<? extends Tab> observable, Tab oldValue, Tab newValue) {
+                sort="default";
                 mediaListView.setItems(null);
                 scrollPane.setDisable(true);
                 if(newValue.getText().equals("Liked"))
@@ -487,6 +488,7 @@ public class MyShowsController extends Controller{
     }
 
     void clearMediaView(){
+        selected= null;
         titleText.setText("");
         yearText.setText("");
         runtimeText.setText("");
@@ -498,12 +500,14 @@ public class MyShowsController extends Controller{
 
     void setRecommendedList(){
         menu="recommended";
+        sort="default";
         //ObservableList<String> recommendedList = FXCollections.observableArrayList( someFunctionToGetRecommendedStringArrayList() )
         //mediaListView.setItems(recommendedList);
     }
 
     void setLikedList(){
         menu="liked";
+        sort="default";
         searchButton.setVisible(false);
         searchTextField.setVisible(false);
         ObservableList<String> likedList = FXCollections.observableArrayList(db.findLikedMedia());
@@ -512,6 +516,7 @@ public class MyShowsController extends Controller{
 
     void setWatchedList(){
         menu="watched";
+        sort="default";
         ObservableList<String> watchedList = FXCollections.observableArrayList(db.findWatchedMedia());
         mediaListView.setItems(watchedList);
     }

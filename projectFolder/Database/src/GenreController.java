@@ -188,9 +188,6 @@ public class GenreController extends Controller{
     @FXML
     private AnchorPane searchAnchorPage;
 
-    @FXML
-    private Button searchButton;
-
     ArrayList<String> genres;
     ArrayList<Button> genreButtons;
     ArrayList<String> likedGenres;
@@ -349,18 +346,12 @@ public class GenreController extends Controller{
 
     @FXML
     void logoutButtonPressed(ActionEvent event) {
-
         super.switchWindow(event, "login.fxml", logoutButton);
     }
 
     @FXML
     void myShowsButtonPressed(ActionEvent event) {
         super.switchWindow(event, "myShows.fxml", logoutButton);
-
-    }
-
-    @FXML
-    void searchButtonPressed(ActionEvent event) {
     }
 
     public void initialize(){
