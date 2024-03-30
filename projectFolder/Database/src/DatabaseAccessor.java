@@ -3,13 +3,14 @@ import static com.mongodb.client.model.Filters.eq;
 
 import com.mongodb.Block;
 import com.mongodb.client.*;
+import com.mongodb.client.model.Aggregates;
 import com.mongodb.client.model.Filters;
+import com.mongodb.client.model.Sorts;
 import org.bson.Document;
 import org.bson.conversions.Bson;
 import com.mongodb.client.model.Projections;
 
-import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.*;
 
 public class DatabaseAccessor {
 
@@ -203,6 +204,85 @@ public class DatabaseAccessor {
         }
 
         return docList;
+    }
+
+    public ArrayList<String> findMediaSorted(String mediaName, String sorting) {
+        boolean isAscend = sortWhichWay(sorting);
+        String  sortCriteria = sortCriteria(sorting);
+
+        Bson sort = null;
+
+        if(sortCriteria.equals("_id")) {
+            sort = Aggregates.sort(Sorts.ascending("movie_title"));
+        }
+        else {
+            if (isAscend) {
+                sort = Aggregates.sort(Sorts.ascending(sortCriteria));
+            }
+            if (!isAscend) {
+                sort = Aggregates.sort(Sorts.descending(sortCriteria));
+
+            }
+        }
+
+        MongoCollection<Document> c = database.getCollection(PRODUCTION_COLLECTION);
+
+        Bson mediaFinder = Filters.regex("movie_title", mediaName);
+
+        Bson onlyNames = Projections.fields(
+                Projections.include("movie_title"),
+                Projections.excludeId());
+
+        Bson combineToProd = Aggregates
+                .lookup(MEDIA_COLLECTION, "movie_id", "movie_id", "media");
+        Bson out = Aggregates.out("media_production");
+        Bson sizeLimiter = Aggregates.limit(20);
+        Bson mediaFinds = Aggregates.match(mediaFinder);
+        Document replaceRootStage = new Document("$replaceRoot",
+                new Document("newRoot",
+                        new Document("$mergeObjects",
+                                Arrays.asList(
+                                        new Document("$arrayElemAt", Arrays.asList("$media", 0)),
+                                        "$$ROOT"
+                                )
+                        )
+                )
+        );
+
+
+        List<Document> results = c.aggregate( Arrays.asList(combineToProd, replaceRootStage, mediaFinds, sort, sizeLimiter, out) ).into(new ArrayList<>());
+
+        ArrayList<String> docList = new ArrayList<String>();
+        for(Document i: results) {
+            String s = (String) i.get("movie_title");
+            docList.add((String) i.get("movie_title"));
+            //System.out.printf("%s %n", s);
+        }
+
+
+        return docList;
+    }
+
+    private boolean sortWhichWay(String sorting) {
+        if(Objects.equals(sorting, "alphabetical") ||
+           Objects.equals(sorting, "ratingLow")    ||
+           Objects.equals(sorting, "yearOldest")   ||
+           Objects.equals(sorting, "runtimeShortest"))
+        {
+            return true;
+        }
+        else {
+            return false;
+        }
+    }
+
+    private String sortCriteria(String sorting) {
+        return switch (sorting) {
+            case "ratingHigh", "ratingLow" -> "avg_rating";
+            case "yearNewest", "yearOldest" -> "year";
+            case "runtimeLongest", "runtimeShortest" -> "run_time";
+            default -> "_id";
+        };
     }
 
     public long findUser(String username, String password) {

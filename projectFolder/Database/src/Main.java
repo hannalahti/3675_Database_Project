@@ -79,6 +79,12 @@ public class Main extends Application {
             System.out.printf("%s %n", i);
         }
 
+        System.out.printf("%n%nSearch Media Sorted Example %n");
+        c = db.findMediaSorted("c", "alpha");
+        for(String i : c) {
+            System.out.printf("%s %n", i);
+        }
+
         launch(args);
 
     }
