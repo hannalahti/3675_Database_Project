@@ -69,6 +69,7 @@ public class LoginPageController extends Controller{
         }
         super.switchWindow(e, "myShows.fxml", loginButton);
         System.out.println("login successful");
+        System.out.printf("user id :%d %n", db.user_id);
     }
 
     void signup(ActionEvent e) {

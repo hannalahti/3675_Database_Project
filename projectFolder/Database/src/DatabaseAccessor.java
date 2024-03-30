@@ -15,6 +15,7 @@ import java.util.*;
 
 public class DatabaseAccessor {
 
+    static DatabaseAccessor db;
 
     long user_id = -1;
     private MongoClient mongoClient;
@@ -580,6 +581,10 @@ public class DatabaseAccessor {
 
     public DatabaseAccessor() {
 
+        if(db != null) {
+            return;
+        }
+        db = this;
         try  {
             mongoClient = MongoClients.create(URI);
             database = mongoClient.getDatabase(DATABASE_NAME);
