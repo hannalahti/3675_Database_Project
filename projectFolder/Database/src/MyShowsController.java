@@ -467,9 +467,15 @@ public class MyShowsController extends Controller{
 
     void sortMedia(String s){
         sort = s;
+        ObservableList<String> media;
         System.out.println(menu+sort);
-        //ObservableList<String> media = FXCollections.observableArrayList( query() );
-        //mediaListView.setItems(media);
+        if(menu.equals("search"))
+            media = FXCollections.observableArrayList( super.db.findMediaSorted(search, s) );
+        else if(menu.equals("liked"))
+            media = FXCollections.observableArrayList( super.db.findLikedMediaSorted(search, s) );
+        else media = FXCollections.observableArrayList( super.db.findWatchedMediaSorted(search, s) );
+
+        mediaListView.setItems(media);
     }
 
     void resetPage(){
@@ -501,29 +507,13 @@ public class MyShowsController extends Controller{
         searchButton.setVisible(false);
         searchTextField.setVisible(false);
         ObservableList<String> likedList = FXCollections.observableArrayList(db.findLikedMedia());
-
-        /*for testing ONLY
-        ArrayList<String> media = new ArrayList<String>();
-        media.add("test title");
-        media.add("other title");
-        ObservableList<String> likedList = FXCollections.observableArrayList(media);
-        */
-
         mediaListView.setItems(likedList);
     }
 
     void setWatchedList(){
         menu="watched";
-        searchButton.setVisible(false);
-        searchTextField.setVisible(false);
         ObservableList<String> watchedList = FXCollections.observableArrayList(db.findWatchedMedia());
         mediaListView.setItems(watchedList);
-        /*
-        ArrayList<String> media = new ArrayList<String>();
-        media.add("hello");
-        ObservableList<String> watchedList = FXCollections.observableArrayList(media);
-        mediaListView.setItems(watchedList);
-         */
     }
 
     /*
@@ -582,31 +572,6 @@ public class MyShowsController extends Controller{
             genres = genres.concat(", " + info.get(i));
 
         genreText.setText(genres);
-    }
-
-    /*
-    Retrieving selected media's info from database
-     */
-    ArrayList<String> getMediaInfo(String title){
-        //get media info from database by searching for specified title
-        ArrayList<String> info = super.db.findDetails(title);
-
-        //for testing purposes ONLY:
-        /*
-        ArrayList<String> info = new ArrayList<String>();
-        info.add("title name"); //title
-        info.add("2024");       //year
-        info.add("90");         //runtime
-        info.add("movie");      //format
-        info.add("9");          //rating
-        info.add("true");          //isLiked by user (0 for not, 1 for is)
-        info.add("false");          //isWatched by user (0 for not, 1 for is)
-        //for genre, add as separate entries:
-        info.add("mystery");
-        info.add("fantasy");
-        info.add("comedy");
-*/
-        return info;
     }
 
     /*
