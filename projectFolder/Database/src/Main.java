@@ -7,30 +7,13 @@ import javafx.stage.Stage;
 
 public class Main extends Application {
 
-    static String DATABASE_NAME = "DatabaseProject";
-    public static void connectDB() {
-        String uri = "mongodb+srv://root:root@database.5voxcth.mongodb.net/?retryWrites=true&w=majority&appName=Database\n";
-        try (MongoClient mongoClient = MongoClients.create(uri)) {
 
-            MongoDatabase database = mongoClient.getDatabase(DATABASE_NAME);
-
-            if(database==null)
-                System.out.println("No database found");
-            else
-                System.out.println("Success!");
-
-            MongoIterable<String> list = database.listCollectionNames();
-            for (String name : list) {
-                System.out.println(name);
-            }
-        }
-    }
 
 
     @Override
     public void start(Stage stage) throws Exception {
 
-        Parent root = FXMLLoader.load(getClass().getResource("myShows.fxml"));
+        Parent root = FXMLLoader.load(getClass().getResource("login.fxml"));
 
         Scene scene = new Scene(root);
         stage.setTitle("Media");
@@ -41,6 +24,7 @@ public class Main extends Application {
     public static void main(String[] args) {
 
         //connectDB();
+        Controller controller = new Controller();
         launch(args);
 
     }

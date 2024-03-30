@@ -34,16 +34,18 @@
 
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ButtonBar?>
+<?import javafx.scene.control.CheckBox?>
 <?import javafx.scene.control.ListView?>
-<?import javafx.scene.control.Menu?>
-<?import javafx.scene.control.MenuBar?>
 <?import javafx.scene.control.MenuItem?>
 <?import javafx.scene.control.ProgressIndicator?>
 <?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.Slider?>
 <?import javafx.scene.control.SplitMenuButton?>
 <?import javafx.scene.control.Tab?>
 <?import javafx.scene.control.TabPane?>
 <?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.TitledPane?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.GridPane?>
@@ -53,21 +55,28 @@
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
-<VBox prefHeight="538.0" prefWidth="712.0" style="-fx-background-color: #fff;" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="MyShowsController">
+<VBox prefHeight="538.0" prefWidth="823.0" style="-fx-background-color: #fff;" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="MyShowsController">
   <children>
-    <MenuBar prefWidth="700.0" VBox.vgrow="NEVER">
-      <menus>
-            <Menu fx:id="logoutLink" mnemonicParsing="false" onAction="#logoutLinkPressed" text="Logout" />
-        <Menu fx:id="settingsLink" mnemonicParsing="false" onAction="#settingsLinkPressed" text="Settings" />
-            <Menu fx:id="myShowsLink" disable="true" mnemonicParsing="false" onAction="#myShowsLinkPressed" text="My Shows" />
-            <Menu fx:id="searchLink" mnemonicParsing="false" onAction="#searchLinkPressed" text="Search" />
-      </menus>
+      <ButtonBar prefHeight="34.0" prefWidth="486.0">
+        <buttons>
+          <Button fx:id="settingsButton" mnemonicParsing="false" onAction="#settingsButtonPressed" style="-fx-background-color: #ffffff;" text="Genres" />
+            <Button disable="true" mnemonicParsing="false" style="-fx-background-color: #ffffff;" text="Media">
+               <opaqueInsets>
+                  <Insets />
+               </opaqueInsets>
+            </Button>
+            <Button fx:id="logoutButton" mnemonicParsing="false" onAction="#logoutButtonPressed" style="-fx-background-color: #ffffff;" text="Logout" />
+        </buttons>
          <padding>
-            <Insets bottom="4.0" left="4.0" top="4.0" />
+            <Insets bottom="4.0" top="4.0" />
          </padding>
-    </MenuBar>
-      <TabPane fx:id="tabPane" prefHeight="59.0" prefWidth="712.0" tabClosingPolicy="UNAVAILABLE">
+         <VBox.margin>
+            <Insets right="300.0" />
+         </VBox.margin>
+      </ButtonBar>
+      <TabPane fx:id="tabPane" nodeOrientation="RIGHT_TO_LEFT" prefHeight="59.0" prefWidth="712.0" tabClosingPolicy="UNAVAILABLE">
         <tabs>
+            <Tab text="Search" />
           <Tab fx:id="likedMenu" text="Liked" />
           <Tab fx:id="watchedMenu" text="Watched" />
             <Tab text="Recommended">
@@ -77,165 +86,683 @@
             </Tab>
         </tabs>
       </TabPane>
-    <AnchorPane fx:id="searchAnchorPage" maxHeight="-1.0" maxWidth="-1.0" prefHeight="463.0" prefWidth="712.0" style="-fx-background-color: #202020;">
-      <children>
-            <GridPane layoutX="-1.0" layoutY="2.0" prefHeight="474.0" prefWidth="446.0">
-              <columnConstraints>
-                <ColumnConstraints hgrow="SOMETIMES" />
-                <ColumnConstraints hgrow="SOMETIMES" />
-                  <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-              </columnConstraints>
-              <rowConstraints>
-                <RowConstraints vgrow="SOMETIMES" />
-                <RowConstraints minHeight="10.0" vgrow="SOMETIMES" />
-              </rowConstraints>
-               <children>
-                  <TextField fx:id="searchTextField" GridPane.valignment="CENTER">
-                     <GridPane.margin>
-                        <Insets left="15.0" top="15.0" />
-                     </GridPane.margin>
-                  </TextField>
-                  <Button fx:id="searchButton" mnemonicParsing="false" onAction="#searchButtonPressed" text="Search" GridPane.columnIndex="1" GridPane.halignment="LEFT" GridPane.valignment="CENTER">
-                     <GridPane.margin>
-                        <Insets left="8.0" top="15.0" />
-                     </GridPane.margin>
-                  </Button>
-                  <ScrollPane prefHeight="338.0" style="-fx-background-color: #000000;" GridPane.columnSpan="3" GridPane.rowIndex="1">
-                    <content>
-                      <AnchorPane minHeight="0.0" minWidth="0.0" prefWidth="399.0" style="-fx-background-color: #000000;">
+      <HBox prefHeight="477.0" prefWidth="863.0">
+         <children>
+            <ScrollPane fx:id="scrollPane" prefHeight="477.0" prefWidth="284.0" style="-fx-background-color: #000000;">
+               <content>
+                  <AnchorPane minWidth="0.0" prefWidth="200.0" style="-fx-background-color: Arial Rounded MT Bold;">
+                     <children>
+                        <VBox layoutX="-4.0" layoutY="-1.0" minHeight="474.0" prefHeight="478.0" prefWidth="242.0" style="-fx-background-color: #000000;">
                            <children>
-                              <ListView fx:id="mediaListView" prefHeight="400.0" prefWidth="414.0" />
-                              <ProgressIndicator fx:id="loadingIndicator" layoutX="181.0" layoutY="163.0" visible="false" />
+                              <HBox>
+                                 <children>
+                                    <Text fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" text="Filter">
+                                       <font>
+                                          <Font name="Arial Rounded MT Bold" size="15.0" />
+                                       </font>
+                                       <HBox.margin>
+                                          <Insets left="15.0" top="8.0" />
+                                       </HBox.margin>
+                                    </Text>
+                                    <Button fx:id="applyButton" alignment="CENTER_RIGHT" mnemonicParsing="false" onAction="#applyButtonPressed" style="-fx-background-color: #098920;" text="APPLY" textFill="WHITE">
+                                       <HBox.margin>
+                                          <Insets left="110.0" top="4.0" />
+                                       </HBox.margin>
+                                    </Button>
+                                 </children>
+                                 <VBox.margin>
+                                    <Insets bottom="15.0" top="10.0" />
+                                 </VBox.margin>
+                              </HBox>
+                              <TitledPane expanded="false" prefWidth="158.0" text="Year">
+                                 <content>
+                                    <AnchorPane minWidth="0.0" prefWidth="202.0" style="-fx-background-color: #202020;">
+                                       <children>
+                                          <HBox prefWidth="202.0">
+                                             <children>
+                                                <VBox alignment="TOP_RIGHT" prefWidth="54.0">
+                                                   <padding>
+                                                      <Insets bottom="8.0" left="8.0" right="8.0" top="8.0" />
+                                                   </padding>
+                                                   <children>
+                                                      <Text fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" text="from" textAlignment="RIGHT">
+                                                         <font>
+                                                            <Font name="Arial Rounded MT Bold" size="12.0" />
+                                                         </font>
+                                                         <VBox.margin>
+                                                            <Insets top="4.0" />
+                                                         </VBox.margin>
+                                                      </Text>
+                                                      <Text fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" text="to" textAlignment="RIGHT">
+                                                         <font>
+                                                            <Font name="Arial Rounded MT Bold" size="12.0" />
+                                                         </font>
+                                                         <VBox.margin>
+                                                            <Insets top="4.0" />
+                                                         </VBox.margin>
+                                                      </Text>
+                                                   </children>
+                                                </VBox>
+                                                <VBox prefWidth="166.0" style="-fx--color: #000000;">
+                                                   <padding>
+                                                      <Insets bottom="8.0" left="8.0" right="8.0" top="8.0" />
+                                                   </padding>
+                                                   <children>
+                                                      <Slider fx:id="yearFromSlider" max="2024.0" min="1850.0" minorTickCount="5" prefHeight="14.0" prefWidth="71.0" snapToTicks="true">
+                                                         <padding>
+                                                            <Insets bottom="4.0" top="4.0" />
+                                                         </padding>
+                                                      </Slider>
+                                                      <Slider fx:id="yearToSlider" max="2024.0" min="1850.0" snapToTicks="true" value="2024.0" />
+                                                   </children>
+                                                </VBox>
+                                                <VBox prefWidth="100.0">
+                                                   <children>
+                                                      <TextField fx:id="yearFromTextField" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="18.0" prefWidth="50.0" text="1850">
+                                                         <VBox.margin>
+                                                            <Insets top="8.0" />
+                                                         </VBox.margin>
+                                                      </TextField>
+                                                      <TextField fx:id="yearToTextField" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="18.0" prefWidth="50.0" text="2024">
+                                                         <VBox.margin>
+                                                            <Insets top="4.0" />
+                                                         </VBox.margin>
+                                                      </TextField>
+                                                   </children>
+                                                </VBox>
+                                             </children>
+                                             <padding>
+                                                <Insets top="10.0" />
+                                             </padding>
+                                          </HBox>
+                                       </children>
+                                    </AnchorPane>
+                                 </content>
+                                 <padding>
+                                    <Insets bottom="4.0" left="8.0" right="8.0" />
+                                 </padding>
+                              </TitledPane>
+                              <TitledPane expanded="false" prefWidth="158.0" text="Runtime">
+                                 <content>
+                                    <AnchorPane minWidth="0.0" prefWidth="202.0" style="-fx-background-color: #202020;">
+                                       <children>
+                                          <HBox prefWidth="202.0">
+                                             <children>
+                                                <VBox alignment="TOP_RIGHT" prefWidth="54.0">
+                                                   <padding>
+                                                      <Insets bottom="8.0" left="8.0" right="8.0" top="8.0" />
+                                                   </padding>
+                                                   <children>
+                                                      <Text fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" text="from" textAlignment="RIGHT">
+                                                         <font>
+                                                            <Font name="Arial Rounded MT Bold" size="12.0" />
+                                                         </font>
+                                                         <VBox.margin>
+                                                            <Insets top="4.0" />
+                                                         </VBox.margin>
+                                                      </Text>
+                                                      <Text fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" text="to" textAlignment="RIGHT">
+                                                         <font>
+                                                            <Font name="Arial Rounded MT Bold" size="12.0" />
+                                                         </font>
+                                                         <VBox.margin>
+                                                            <Insets top="4.0" />
+                                                         </VBox.margin>
+                                                      </Text>
+                                                   </children>
+                                                </VBox>
+                                                <VBox prefWidth="166.0">
+                                                   <padding>
+                                                      <Insets bottom="8.0" left="8.0" right="8.0" top="8.0" />
+                                                   </padding>
+                                                   <children>
+                                                      <Slider fx:id="runtimeFromSlider" majorTickUnit="50.0" max="250.0" minorTickCount="10" prefHeight="14.0" prefWidth="71.0" snapToTicks="true">
+                                                         <padding>
+                                                            <Insets bottom="4.0" top="4.0" />
+                                                         </padding>
+                                                      </Slider>
+                                                      <Slider fx:id="runtimeToSlider" majorTickUnit="50.0" max="250.0" minorTickCount="10" snapToTicks="true" value="50000.0" />
+                                                   </children>
+                                                </VBox>
+                                                <VBox prefWidth="100.0">
+                                                   <children>
+                                                      <TextField fx:id="runtimeFromTextField" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="18.0" prefWidth="50.0" text="0">
+                                                         <VBox.margin>
+                                                            <Insets top="8.0" />
+                                                         </VBox.margin>
+                                                      </TextField>
+                                                      <TextField fx:id="runtimeToTextField" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="18.0" prefWidth="50.0" text="250">
+                                                         <VBox.margin>
+                                                            <Insets top="4.0" />
+                                                         </VBox.margin>
+                                                      </TextField>
+                                                   </children>
+                                                </VBox>
+                                             </children>
+                                             <padding>
+                                                <Insets top="10.0" />
+                                             </padding>
+                                          </HBox>
+                                       </children>
+                                    </AnchorPane>
+                                 </content>
+                                 <padding>
+                                    <Insets left="8.0" right="8.0" top="4.0" />
+                                 </padding>
+                              </TitledPane>
+                              <TitledPane expanded="false" prefWidth="158.0" text="Rating">
+                                 <content>
+                                    <AnchorPane minWidth="0.0" prefWidth="202.0" style="-fx-background-color: #202020;">
+                                       <children>
+                                          <HBox layoutX="10.0" layoutY="10.0" prefWidth="200.0">
+                                             <children>
+                                                <VBox alignment="TOP_RIGHT">
+                                                   <padding>
+                                                      <Insets bottom="8.0" right="8.0" top="8.0" />
+                                                   </padding>
+                                                   <children>
+                                                      <Text fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" text="from" textAlignment="RIGHT">
+                                                         <font>
+                                                            <Font name="Arial Rounded MT Bold" size="12.0" />
+                                                         </font>
+                                                         <VBox.margin>
+                                                            <Insets top="4.0" />
+                                                         </VBox.margin>
+                                                      </Text>
+                                                      <Text fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" text="to" textAlignment="RIGHT">
+                                                         <font>
+                                                            <Font name="Arial Rounded MT Bold" size="12.0" />
+                                                         </font>
+                                                         <VBox.margin>
+                                                            <Insets top="4.0" />
+                                                         </VBox.margin>
+                                                      </Text>
+                                                   </children>
+                                                </VBox>
+                                                <VBox>
+                                                   <padding>
+                                                      <Insets bottom="8.0" left="8.0" right="8.0" top="8.0" />
+                                                   </padding>
+                                                   <children>
+                                                      <Slider fx:id="ratingFromSlider" blockIncrement="1.0" majorTickUnit="1.0" max="10.0" minorTickCount="1" prefHeight="14.0" prefWidth="71.0" snapToTicks="true">
+                                                         <padding>
+                                                            <Insets bottom="4.0" top="4.0" />
+                                                         </padding>
+                                                      </Slider>
+                                                      <Slider fx:id="ratingToSlider" blockIncrement="1.0" majorTickUnit="1.0" max="10.0" minorTickCount="1" snapToTicks="true" value="10.0" />
+                                                   </children>
+                                                </VBox>
+                                                <VBox prefWidth="100.0">
+                                                   <children>
+                                                      <TextField fx:id="ratingFromTextField" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="18.0" prefWidth="50.0" text="0">
+                                                         <VBox.margin>
+                                                            <Insets top="8.0" />
+                                                         </VBox.margin>
+                                                      </TextField>
+                                                      <TextField fx:id="ratingToTextField" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="18.0" prefWidth="50.0" text="10">
+                                                         <VBox.margin>
+                                                            <Insets top="4.0" />
+                                                         </VBox.margin>
+                                                      </TextField>
+                                                   </children>
+                                                </VBox>
+                                             </children>
+                                          </HBox>
+                                       </children>
+                                    </AnchorPane>
+                                 </content>
+                                 <padding>
+                                    <Insets bottom="8.0" left="8.0" right="8.0" top="8.0" />
+                                 </padding>
+                              </TitledPane>
+                              <TitledPane expanded="false" prefWidth="158.0" text="Format">
+                                 <content>
+                                    <AnchorPane minWidth="0.0" prefWidth="200.0" style="-fx-background-color: #202020;">
+                                       <children>
+                                          <GridPane>
+                                             <columnConstraints>
+                                                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                                                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                                             </columnConstraints>
+                                             <rowConstraints>
+                                                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                             </rowConstraints>
+                                             <children>
+                                                <CheckBox fx:id="anyFormatCheckBox" mnemonicParsing="false" selected="true" text="Any" textFill="WHITE">
+                                                   <padding>
+                                                      <Insets left="8.0" top="8.0" />
+                                                   </padding>
+                                                </CheckBox>
+                                                <CheckBox fx:id="tvEpisodeFormatCheckBox" mnemonicParsing="false" text="tvEpisode" textFill="WHITE" GridPane.columnIndex="1">
+                                                   <padding>
+                                                      <Insets left="8.0" top="8.0" />
+                                                   </padding>
+                                                </CheckBox>
+                                                <CheckBox fx:id="tvShortFormatCheckBox" mnemonicParsing="false" text="tvShort" textFill="WHITE" GridPane.columnIndex="1" GridPane.rowIndex="5">
+                                                   <padding>
+                                                      <Insets left="8.0" top="8.0" />
+                                                   </padding>
+                                                </CheckBox>
+                                                <CheckBox fx:id="videoGameFormatCheckBox" mnemonicParsing="false" text="videoGame" textFill="WHITE" GridPane.rowIndex="5">
+                                                   <padding>
+                                                      <Insets left="8.0" top="8.0" />
+                                                   </padding>
+                                                </CheckBox>
+                                                <CheckBox fx:id="tvSpecialFormatCheckBox" mnemonicParsing="false" text="tvSpecial" textFill="WHITE" GridPane.columnIndex="1" GridPane.rowIndex="4">
+                                                   <padding>
+                                                      <Insets left="8.0" top="8.0" />
+                                                   </padding>
+                                                </CheckBox>
+                                                <CheckBox fx:id="tvMiniSeriesFormatCheckBox" mnemonicParsing="false" text="tvMiniSeries" textFill="WHITE" GridPane.rowIndex="4">
+                                                   <padding>
+                                                      <Insets left="8.0" top="8.0" />
+                                                   </padding>
+                                                </CheckBox>
+                                                <CheckBox fx:id="tvMovieFormatCheckBox" mnemonicParsing="false" text="tvMovie" textFill="WHITE" GridPane.columnIndex="1" GridPane.rowIndex="3">
+                                                   <padding>
+                                                      <Insets left="8.0" top="8.0" />
+                                                   </padding>
+                                                </CheckBox>
+                                                <CheckBox fx:id="tvSeriesFormatCheckBox" mnemonicParsing="false" text="tvSeries" textFill="WHITE" GridPane.columnIndex="1" GridPane.rowIndex="2">
+                                                   <padding>
+                                                      <Insets left="8.0" top="8.0" />
+                                                   </padding>
+                                                </CheckBox>
+                                                <CheckBox fx:id="videoFormatCheckBox" mnemonicParsing="false" text="video" textFill="WHITE" GridPane.rowIndex="2">
+                                                   <padding>
+                                                      <Insets left="8.0" top="8.0" />
+                                                   </padding>
+                                                </CheckBox>
+                                                <CheckBox fx:id="movieFormatCheckBox" mnemonicParsing="false" text="movie" textFill="WHITE" GridPane.columnIndex="1" GridPane.rowIndex="1">
+                                                   <padding>
+                                                      <Insets left="8.0" top="8.0" />
+                                                   </padding>
+                                                </CheckBox>
+                                                <CheckBox fx:id="shortFormatCheckBox" mnemonicParsing="false" text="short" textFill="WHITE" GridPane.rowIndex="1">
+                                                   <padding>
+                                                      <Insets left="8.0" top="8.0" />
+                                                   </padding>
+                                                </CheckBox>
+                                                <CheckBox fx:id="tvPilotFormatCheckBox" mnemonicParsing="false" text="tvPilot" textFill="WHITE" GridPane.rowIndex="3">
+                                                   <padding>
+                                                      <Insets left="8.0" top="8.0" />
+                                                   </padding>
+                                                </CheckBox>
+                                             </children>
+                                          </GridPane>
+                                       </children>
+                                    </AnchorPane>
+                                 </content>
+                                 <padding>
+                                    <Insets bottom="8.0" left="8.0" right="8.0" />
+                                 </padding>
+                              </TitledPane>
+                              <TitledPane expanded="false" prefWidth="218.0" text="Genre">
+                                 <padding>
+                                    <Insets bottom="8.0" left="8.0" right="8.0" />
+                                 </padding>
+                                 <content>
+                                    <AnchorPane minWidth="0.0" prefWidth="200.0" style="-fx-background-color: #202020;">
+                                       <children>
+                                          <GridPane>
+                                             <columnConstraints>
+                                                <ColumnConstraints hgrow="SOMETIMES" prefWidth="100.0" />
+                                                <ColumnConstraints hgrow="SOMETIMES" />
+                                             </columnConstraints>
+                                             <rowConstraints>
+                                                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                             </rowConstraints>
+                                             <children>
+                                                <CheckBox fx:id="anyGenreCheckBox" mnemonicParsing="false" selected="true" text="Any" textFill="WHITE">
+                                                   <padding>
+                                                      <Insets left="8.0" top="8.0" />
+                                                   </padding>
+                                                </CheckBox>
+                                                <CheckBox fx:id="comedyGenreCheckBox" mnemonicParsing="false" text="Comedy" textFill="WHITE" GridPane.rowIndex="1">
+                                                   <padding>
+                                                      <Insets left="8.0" top="8.0" />
+                                                   </padding>
+                                                </CheckBox>
+                                                <CheckBox fx:id="shortGenreCheckBox" mnemonicParsing="false" text="Short" textFill="WHITE" GridPane.rowIndex="2">
+                                                   <padding>
+                                                      <Insets left="8.0" top="8.0" />
+                                                   </padding>
+                                                </CheckBox>
+                                                <CheckBox fx:id="dramaGenreCheckBox" mnemonicParsing="false" text="Drama" textFill="WHITE" GridPane.columnIndex="1">
+                                                   <padding>
+                                                      <Insets left="8.0" top="8.0" />
+                                                   </padding>
+                                                </CheckBox>
+                                                <CheckBox fx:id="talkshowGenreCheckBox" mnemonicParsing="false" text="Talk-Show" textFill="WHITE" GridPane.columnIndex="1" GridPane.rowIndex="1">
+                                                   <padding>
+                                                      <Insets left="8.0" top="8.0" />
+                                                   </padding>
+                                                </CheckBox>
+                                                <CheckBox fx:id="documentaryGenreCheckBox" mnemonicParsing="false" text="Documentary" textFill="WHITE" GridPane.columnIndex="1" GridPane.rowIndex="2">
+                                                   <padding>
+                                                      <Insets left="8.0" top="8.0" />
+                                                   </padding>
+                                                </CheckBox>
+                                                <CheckBox fx:id="filmnoirGenreCheckBox" mnemonicParsing="false" text="Film-Noir" textFill="WHITE" GridPane.rowIndex="14">
+                                                   <padding>
+                                                      <Insets left="8.0" top="8.0" />
+                                                   </padding>
+                                                </CheckBox>
+                                                <CheckBox fx:id="westernGenreCheckBox" mnemonicParsing="false" text="Western" textFill="WHITE" GridPane.columnIndex="1" GridPane.rowIndex="13">
+                                                   <padding>
+                                                      <Insets left="8.0" top="8.0" />
+                                                   </padding>
+                                                </CheckBox>
+                                                <CheckBox fx:id="warGenreCheckBox" mnemonicParsing="false" text="War" textFill="WHITE" GridPane.rowIndex="13">
+                                                   <padding>
+                                                      <Insets left="8.0" top="8.0" />
+                                                   </padding>
+                                                </CheckBox>
+                                                <CheckBox fx:id="musicalGenreCheckBox" mnemonicParsing="false" text="Musical" textFill="WHITE" GridPane.columnIndex="1" GridPane.rowIndex="12">
+                                                   <padding>
+                                                      <Insets left="8.0" top="8.0" />
+                                                   </padding>
+                                                </CheckBox>
+                                                <CheckBox fx:id="scifiGenreCheckBox" mnemonicParsing="false" text="Sci-Fi" textFill="WHITE" GridPane.rowIndex="12">
+                                                   <padding>
+                                                      <Insets left="8.0" top="8.0" />
+                                                   </padding>
+                                                </CheckBox>
+                                                <CheckBox fx:id="biographyGenreCheckBox" mnemonicParsing="false" text="Biography" textFill="WHITE" GridPane.columnIndex="1" GridPane.rowIndex="11">
+                                                   <padding>
+                                                      <Insets left="8.0" top="8.0" />
+                                                   </padding>
+                                                </CheckBox>
+                                                <CheckBox fx:id="historyGenreCheckBox" mnemonicParsing="false" text="History" textFill="WHITE" GridPane.rowIndex="11">
+                                                   <padding>
+                                                      <Insets left="8.0" top="8.0" />
+                                                   </padding>
+                                                </CheckBox>
+                                                <CheckBox fx:id="thrillerGenreCheckBox" mnemonicParsing="false" text="Thriller" textFill="WHITE" GridPane.columnIndex="1" GridPane.rowIndex="10">
+                                                   <padding>
+                                                      <Insets left="8.0" top="8.0" />
+                                                   </padding>
+                                                </CheckBox>
+                                                <CheckBox fx:id="horrorGenreCheckBox" mnemonicParsing="false" text="Horror" textFill="WHITE" GridPane.rowIndex="10">
+                                                   <padding>
+                                                      <Insets left="8.0" top="8.0" />
+                                                   </padding>
+                                                </CheckBox>
+                                                <CheckBox fx:id="mysteryGenreCheckBox" mnemonicParsing="false" text="Mystery" textFill="WHITE" GridPane.columnIndex="1" GridPane.rowIndex="9">
+                                                   <padding>
+                                                      <Insets left="8.0" top="8.0" />
+                                                   </padding>
+                                                </CheckBox>
+                                                <CheckBox fx:id="fantasyGenreCheckBox" mnemonicParsing="false" text="Fantasy" textFill="WHITE" GridPane.rowIndex="9">
+                                                   <padding>
+                                                      <Insets left="8.0" top="8.0" />
+                                                   </padding>
+                                                </CheckBox>
+                                                <CheckBox fx:id="sportGenreCheckBox" mnemonicParsing="false" text="Sport" textFill="WHITE" GridPane.columnIndex="1" GridPane.rowIndex="8">
+                                                   <padding>
+                                                      <Insets left="8.0" top="8.0" />
+                                                   </padding>
+                                                </CheckBox>
+                                                <CheckBox fx:id="adultGenreCheckBox" mnemonicParsing="false" text="Adult" textFill="WHITE" GridPane.rowIndex="8">
+                                                   <padding>
+                                                      <Insets left="8.0" top="8.0" />
+                                                   </padding>
+                                                </CheckBox>
+                                                <CheckBox fx:id="gameshowGenreCheckBox" mnemonicParsing="false" text="Game-Show" textFill="WHITE" GridPane.columnIndex="1" GridPane.rowIndex="7">
+                                                   <padding>
+                                                      <Insets left="8.0" top="8.0" />
+                                                   </padding>
+                                                </CheckBox>
+                                                <CheckBox fx:id="musicGenreCheckBox" mnemonicParsing="false" text="Music" textFill="WHITE" GridPane.rowIndex="7">
+                                                   <padding>
+                                                      <Insets left="8.0" top="8.0" />
+                                                   </padding>
+                                                </CheckBox>
+                                                <CheckBox fx:id="adventureGenreCheckBox" mnemonicParsing="false" text="Adventure" textFill="WHITE" GridPane.columnIndex="1" GridPane.rowIndex="6">
+                                                   <padding>
+                                                      <Insets left="8.0" top="8.0" />
+                                                   </padding>
+                                                </CheckBox>
+                                                <CheckBox fx:id="actionGenreCheckBox" mnemonicParsing="false" text="Action" textFill="WHITE" GridPane.rowIndex="6">
+                                                   <padding>
+                                                      <Insets left="8.0" top="8.0" />
+                                                   </padding>
+                                                </CheckBox>
+                                                <CheckBox fx:id="crimeGenreCheckBox" mnemonicParsing="false" text="Crime" textFill="WHITE" GridPane.columnIndex="1" GridPane.rowIndex="5">
+                                                   <padding>
+                                                      <Insets left="8.0" top="8.0" />
+                                                   </padding>
+                                                </CheckBox>
+                                                <CheckBox fx:id="animationGenreCheckBox" mnemonicParsing="false" text="Animation" textFill="WHITE" GridPane.rowIndex="5">
+                                                   <padding>
+                                                      <Insets left="8.0" top="8.0" />
+                                                   </padding>
+                                                </CheckBox>
+                                                <CheckBox fx:id="realitytvGenreCheckBox" mnemonicParsing="false" text="Reality-TV" textFill="WHITE" GridPane.columnIndex="1" GridPane.rowIndex="4">
+                                                   <padding>
+                                                      <Insets left="8.0" top="8.0" />
+                                                   </padding>
+                                                </CheckBox>
+                                                <CheckBox fx:id="familyGenreCheckBox" mnemonicParsing="false" text="Family" textFill="WHITE" GridPane.rowIndex="4">
+                                                   <padding>
+                                                      <Insets left="8.0" top="8.0" />
+                                                   </padding>
+                                                </CheckBox>
+                                                <CheckBox fx:id="newsGenreCheckBox" mnemonicParsing="false" text="News" textFill="WHITE" GridPane.columnIndex="1" GridPane.rowIndex="3">
+                                                   <padding>
+                                                      <Insets left="8.0" top="8.0" />
+                                                   </padding>
+                                                </CheckBox>
+                                                <CheckBox fx:id="romanceGenreCheckBox" mnemonicParsing="false" text="Romance" textFill="WHITE" GridPane.rowIndex="3">
+                                                   <padding>
+                                                      <Insets left="8.0" top="8.0" />
+                                                   </padding>
+                                                </CheckBox>
+                                             </children>
+                                          </GridPane>
+                                       </children>
+                                    </AnchorPane>
+                                 </content>
+                              </TitledPane>
                            </children>
+                        </VBox>
+                     </children>
+                  </AnchorPane>
+               </content>
+               <HBox.margin>
+                  <Insets />
+               </HBox.margin>
+            </ScrollPane>
+          <AnchorPane fx:id="searchAnchorPage" maxHeight="-1.0" maxWidth="-Infinity" minWidth="-Infinity" prefHeight="477.0" prefWidth="574.0" style="-fx-background-color: #202020;">
+            <children>
+                  <GridPane layoutX="30.0" layoutY="2.0" prefHeight="474.0" prefWidth="415.0">
+                    <columnConstraints>
+                      <ColumnConstraints hgrow="SOMETIMES" />
+                      <ColumnConstraints hgrow="SOMETIMES" />
+                        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                    </columnConstraints>
+                    <rowConstraints>
+                      <RowConstraints vgrow="SOMETIMES" />
+                      <RowConstraints minHeight="10.0" vgrow="SOMETIMES" />
+                    </rowConstraints>
+                     <children>
+                        <TextField fx:id="searchTextField" GridPane.valignment="CENTER">
+                           <GridPane.margin>
+                              <Insets top="15.0" />
+                           </GridPane.margin>
+                        </TextField>
+                        <Button fx:id="searchButton" mnemonicParsing="false" onAction="#searchButtonPressed" text="Search" GridPane.columnIndex="1" GridPane.halignment="LEFT" GridPane.valignment="CENTER">
+                           <GridPane.margin>
+                              <Insets left="8.0" top="15.0" />
+                           </GridPane.margin>
+                        </Button>
+                        <ScrollPane prefHeight="338.0" style="-fx-background-color: #000000;" GridPane.columnSpan="2" GridPane.rowIndex="1">
+                          <content>
+                            <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="426.0" prefWidth="285.0" style="-fx-background-color: #000000;">
+                                 <children>
+                                    <ListView fx:id="mediaListView" layoutX="-1.0" prefHeight="426.0" prefWidth="285.0">
+                                       <opaqueInsets>
+                                          <Insets />
+                                       </opaqueInsets>
+                                    </ListView>
+                                    <ProgressIndicator fx:id="loadingIndicator" layoutX="181.0" layoutY="163.0" visible="false" />
+                                 </children>
+                              </AnchorPane>
+                          </content>
+                           <GridPane.margin>
+                              <Insets bottom="15.0" />
+                           </GridPane.margin>
+                        </ScrollPane>
+                        <SplitMenuButton fx:id="sortMenu" alignment="CENTER" minWidth="-Infinity" mnemonicParsing="false" text="Sort" textAlignment="RIGHT" GridPane.columnIndex="2">
+                          <items>
+                            <MenuItem fx:id="sortAlphabetical" mnemonicParsing="false" text="Alphabetical" />
+                            <MenuItem fx:id="sortRatingHigh" mnemonicParsing="false" text="Rating: high to low" />
+                              <MenuItem fx:id="sortRatingLow" mnemonicParsing="false" text="Rating: low to high" />
+                              <MenuItem fx:id="sortYearNewest" mnemonicParsing="false" text="Year: newest" />
+                              <MenuItem fx:id="sortYearOldest" mnemonicParsing="false" text="Year: oldest" />
+                              <MenuItem fx:id="sortRuntimeLongest" mnemonicParsing="false" text="Runtime: longest" />
+                              <MenuItem fx:id="sortRuntimeShortest" mnemonicParsing="false" text="Runtime: shortest" />
+                          </items>
+                           <GridPane.margin>
+                              <Insets left="3.0" top="15.0" />
+                           </GridPane.margin>
+                        </SplitMenuButton>
+                     </children>
+                     <padding>
+                        <Insets right="30.0" />
+                     </padding>
+                  </GridPane>
+                  <GridPane layoutX="338.0" layoutY="82.0" prefHeight="330.0" prefWidth="200.0">
+                    <columnConstraints>
+                      <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="115.0" />
+                      <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                    </columnConstraints>
+                    <rowConstraints>
+                      <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                      <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                      <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                    </rowConstraints>
+                     <children>
+                        <Text fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" text="Title:">
+                           <font>
+                              <Font name="Arial Rounded MT Bold" size="15.0" />
+                           </font>
+                        </Text>
+                        <Text fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" text="Year:" GridPane.rowIndex="1">
+                           <font>
+                              <Font name="Arial Rounded MT Bold" size="15.0" />
+                           </font>
+                        </Text>
+                        <Text fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" text="Runtime:" GridPane.rowIndex="2">
+                           <font>
+                              <Font name="Arial Rounded MT Bold" size="15.0" />
+                           </font>
+                        </Text>
+                        <Text fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" text="Format:" GridPane.rowIndex="3">
+                           <font>
+                              <Font name="Arial Rounded MT Bold" size="15.0" />
+                           </font>
+                        </Text>
+                        <Text fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" text="Genre:" GridPane.rowIndex="4">
+                           <font>
+                              <Font name="Arial Rounded MT Bold" size="15.0" />
+                           </font>
+                        </Text>
+                        <Text fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" text="Rating:" GridPane.rowIndex="5">
+                           <font>
+                              <Font name="Arial Rounded MT Bold" size="15.0" />
+                           </font>
+                        </Text>
+                        <Text fx:id="yearText" fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" GridPane.columnIndex="1" GridPane.rowIndex="1">
+                           <font>
+                              <Font name="Arial Rounded MT Bold" size="13.0" />
+                           </font>
+                        </Text>
+                        <Text fx:id="runtimeText" fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" GridPane.columnIndex="1" GridPane.rowIndex="2">
+                           <font>
+                              <Font name="Arial Rounded MT Bold" size="13.0" />
+                           </font>
+                        </Text>
+                        <Text fx:id="formatText" fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" GridPane.columnIndex="1" GridPane.rowIndex="3">
+                           <font>
+                              <Font name="Arial Rounded MT Bold" size="13.0" />
+                           </font>
+                        </Text>
+                        <Text fx:id="ratingText" fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" GridPane.columnIndex="1" GridPane.rowIndex="5">
+                           <font>
+                              <Font name="Arial Rounded MT Bold" size="13.0" />
+                           </font>
+                        </Text>
+                        <AnchorPane minWidth="-Infinity" prefHeight="41.0" prefWidth="80.0" GridPane.columnIndex="1" GridPane.columnSpan="2">
+                           <children>
+                              <Text fx:id="titleText" fill="WHITE" layoutY="11.0" strokeType="OUTSIDE" strokeWidth="0.0" wrappingWidth="152.517333984375">
+                                 <font>
+                                    <Font name="Arial Rounded MT Bold" size="13.0" />
+                                 </font>
+                              </Text>
+                           </children>
+                           <GridPane.margin>
+                              <Insets top="22.0" />
+                           </GridPane.margin>
                         </AnchorPane>
-                    </content>
-                     <GridPane.margin>
-                        <Insets bottom="15.0" left="15.0" right="4.0" />
-                     </GridPane.margin>
-                  </ScrollPane>
-                  <SplitMenuButton fx:id="sortMenu" alignment="CENTER" minWidth="-Infinity" mnemonicParsing="false" text="Sort" textAlignment="RIGHT" GridPane.columnIndex="2" GridPane.halignment="RIGHT">
-                    <items>
-                      <MenuItem fx:id="sortAlphabetical" mnemonicParsing="false" text="Alphabetical" />
-                      <MenuItem fx:id="sortRatingHigh" mnemonicParsing="false" text="Rating: high to low" />
-                        <MenuItem fx:id="sortRatingLow" mnemonicParsing="false" text="Rating: low to high" />
-                        <MenuItem fx:id="sortYearNewest" mnemonicParsing="false" text="Year: newest" />
-                        <MenuItem fx:id="sortYearOldest" mnemonicParsing="false" text="Year: oldest" />
-                        <MenuItem fx:id="sortRuntimeLongest" mnemonicParsing="false" text="Runtime: longest" />
-                        <MenuItem fx:id="sortRuntimeShortest" mnemonicParsing="false" text="Runtime: shortest" />
-                    </items>
-                     <GridPane.margin>
-                        <Insets right="4.0" top="15.0" />
-                     </GridPane.margin>
-                  </SplitMenuButton>
-               </children>
-            </GridPane>
-            <GridPane layoutX="473.0" layoutY="81.0" prefHeight="330.0" prefWidth="200.0">
-              <columnConstraints>
-                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="115.0" />
-                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-                  <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-              </columnConstraints>
-              <rowConstraints>
-                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                  <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                  <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                  <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-              </rowConstraints>
-               <children>
-                  <Text fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" text="Title:">
-                     <font>
-                        <Font name="Arial Rounded MT Bold" size="15.0" />
-                     </font>
-                  </Text>
-                  <Text fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" text="Year:" GridPane.rowIndex="1">
-                     <font>
-                        <Font name="Arial Rounded MT Bold" size="15.0" />
-                     </font>
-                  </Text>
-                  <Text fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" text="Runtime:" GridPane.rowIndex="2">
-                     <font>
-                        <Font name="Arial Rounded MT Bold" size="15.0" />
-                     </font>
-                  </Text>
-                  <Text fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" text="Format:" GridPane.rowIndex="3">
-                     <font>
-                        <Font name="Arial Rounded MT Bold" size="15.0" />
-                     </font>
-                  </Text>
-                  <Text fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" text="Genre:" GridPane.rowIndex="4">
-                     <font>
-                        <Font name="Arial Rounded MT Bold" size="15.0" />
-                     </font>
-                  </Text>
-                  <Text fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" text="Rating:" GridPane.rowIndex="5">
-                     <font>
-                        <Font name="Arial Rounded MT Bold" size="15.0" />
-                     </font>
-                  </Text>
-                  <Text fx:id="yearText" fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" GridPane.columnIndex="1" GridPane.rowIndex="1">
-                     <font>
-                        <Font name="Arial Rounded MT Bold" size="13.0" />
-                     </font>
-                  </Text>
-                  <Text fx:id="runtimeText" fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" GridPane.columnIndex="1" GridPane.rowIndex="2">
-                     <font>
-                        <Font name="Arial Rounded MT Bold" size="13.0" />
-                     </font>
-                  </Text>
-                  <Text fx:id="formatText" fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" GridPane.columnIndex="1" GridPane.rowIndex="3">
-                     <font>
-                        <Font name="Arial Rounded MT Bold" size="13.0" />
-                     </font>
-                  </Text>
-                  <Text fx:id="ratingText" fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" GridPane.columnIndex="1" GridPane.rowIndex="5">
-                     <font>
-                        <Font name="Arial Rounded MT Bold" size="13.0" />
-                     </font>
-                  </Text>
-                  <AnchorPane minWidth="-Infinity" prefHeight="41.0" prefWidth="80.0" GridPane.columnIndex="1" GridPane.columnSpan="2">
-                     <children>
-                        <Text fx:id="titleText" fill="WHITE" layoutY="11.0" strokeType="OUTSIDE" strokeWidth="0.0" wrappingWidth="152.517333984375">
-                           <font>
-                              <Font name="Arial Rounded MT Bold" size="13.0" />
-                           </font>
-                        </Text>
+                        <AnchorPane minWidth="-Infinity" prefHeight="30.0" prefWidth="126.0" GridPane.columnIndex="1" GridPane.rowIndex="4">
+                           <children>
+                              <Text fx:id="genreText" fill="WHITE" layoutY="11.0" strokeType="OUTSIDE" strokeWidth="0.0" wrappingWidth="126.40000000000009">
+                                 <font>
+                                    <Font name="Arial Rounded MT Bold" size="13.0" />
+                                 </font>
+                              </Text>
+                           </children>
+                           <GridPane.margin>
+                              <Insets top="22.0" />
+                           </GridPane.margin>
+                        </AnchorPane>
                      </children>
-                     <GridPane.margin>
-                        <Insets top="22.0" />
-                     </GridPane.margin>
-                  </AnchorPane>
-                  <AnchorPane minWidth="-Infinity" prefHeight="30.0" prefWidth="126.0" GridPane.columnIndex="1" GridPane.rowIndex="4">
+                  </GridPane>
+                  <HBox fx:id="buttonBox" layoutX="351.0" layoutY="428.0" prefHeight="34.0" prefWidth="187.0">
                      <children>
-                        <Text fx:id="genreText" fill="WHITE" layoutY="11.0" strokeType="OUTSIDE" strokeWidth="0.0" wrappingWidth="126.40000000000009">
-                           <font>
-                              <Font name="Arial Rounded MT Bold" size="13.0" />
-                           </font>
+                        <Button fx:id="likeButton" mnemonicParsing="false" onAction="#likeButtonPressed" prefHeight="8.0" prefWidth="30.0" style="-fx-background-color: #fc3434;" stylesheets="@myCss.css" />
+                        <Text fx:id="likeText" fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" text="Liked">
+                           <HBox.margin>
+                              <Insets left="10.0" top="4.0" />
+                           </HBox.margin>
                         </Text>
+                        <Button fx:id="watchedButton" alignment="CENTER_RIGHT" mnemonicParsing="false" onAction="#watchedButtonPressed" style="-fx-background-color: #7402c4;" text="Watched" textFill="WHITE">
+                           <HBox.margin>
+                              <Insets left="40.0" />
+                           </HBox.margin>
+                        </Button>
                      </children>
-                     <GridPane.margin>
-                        <Insets top="22.0" />
-                     </GridPane.margin>
-                  </AnchorPane>
-               </children>
-            </GridPane>
-            <HBox fx:id="buttonBox" layoutX="472.0" layoutY="424.0" prefHeight="54.0" prefWidth="242.0" visible="false">
-               <children>
-                  <Button fx:id="likeButton" mnemonicParsing="false" onAction="#likeButtonPressed" prefHeight="8.0" prefWidth="30.0" style="-fx-background-color: #fc3434;" stylesheets="@myCss.css" />
-                  <Text fx:id="likeText" fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" text="Liked">
-                     <HBox.margin>
-                        <Insets left="10.0" top="4.0" />
-                     </HBox.margin>
-                  </Text>
-                  <Button fx:id="watchedButton" alignment="CENTER_RIGHT" mnemonicParsing="false" onAction="#watchedButtonPressed" style="-fx-background-color: #7402c4;" text="Watched" textFill="WHITE">
-                     <HBox.margin>
-                        <Insets left="40.0" />
-                     </HBox.margin>
-                  </Button>
-               </children>
-            </HBox>
-      </children>
-    </AnchorPane>
+                  </HBox>
+            </children>
+               <HBox.margin>
+                  <Insets />
+               </HBox.margin>
+          </AnchorPane>
+         </children>
+      </HBox>
   </children>
 </VBox>

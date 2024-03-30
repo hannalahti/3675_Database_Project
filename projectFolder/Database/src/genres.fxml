@@ -1,0 +1,288 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+  Copyright (c) 2015, 2019, Gluon and/or its affiliates.
+  All rights reserved. Use is subject to license terms.
+
+  This file is available and licensed under the following license:
+
+  Redistribution and use in source and binary forms, with or without
+  modification, are permitted provided that the following conditions
+  are met:
+
+  - Redistributions of source code must retain the above copyright
+    notice, this list of conditions and the following disclaimer.
+  - Redistributions in binary form must reproduce the above copyright
+    notice, this list of conditions and the following disclaimer in
+    the documentation and/or other materials provided with the distribution.
+  - Neither the name of Oracle Corporation nor the names of its
+    contributors may be used to endorse or promote products derived
+    from this software without specific prior written permission.
+
+  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+  LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+  A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+  OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+  SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+  LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+  DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+  THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+  OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+-->
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ButtonBar?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+<?import javafx.scene.text.Text?>
+
+<VBox prefHeight="510.0" prefWidth="712.0" style="-fx-background-color: #fff;" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="GenreController">
+    <children>
+      <ButtonBar prefWidth="714.0">
+         <buttons>
+            <Button disable="true" mnemonicParsing="false" style="-fx-background-color: #ffffff;" text="Genres" />
+            <Button fx:id="myShowsButton" mnemonicParsing="false" onAction="#myShowsButtonPressed" style="-fx-background-color: #ffffff;" text="MyShows">
+               <opaqueInsets>
+                  <Insets />
+               </opaqueInsets>
+            </Button>
+            <Button fx:id="logoutButton" mnemonicParsing="false" onAction="#logoutButtonPressed" style="-fx-background-color: #ffffff;" text="Logout">
+               <opaqueInsets>
+                  <Insets />
+               </opaqueInsets>
+            </Button>
+         </buttons>
+         <padding>
+            <Insets bottom="4.0" right="230.0" top="4.0" />
+         </padding>
+      </ButtonBar>
+        <AnchorPane fx:id="searchAnchorPage" maxHeight="-1.0" maxWidth="-1.0" prefHeight="-1.0" prefWidth="-1.0" style="-fx-background-color: #202020;" VBox.vgrow="ALWAYS">
+         <children>
+            <GridPane prefHeight="476.0" prefWidth="712.0">
+              <columnConstraints>
+                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                  <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                  <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                  <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+              </columnConstraints>
+              <rowConstraints>
+                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                  <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                  <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                  <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                  <RowConstraints minHeight="10.0" vgrow="SOMETIMES" />
+              </rowConstraints>
+               <children>
+                  <Text fx:id="likeText" fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" text="Comedy" GridPane.columnIndex="1" GridPane.rowIndex="1">
+                     <GridPane.margin>
+                        <Insets left="38.0" />
+                     </GridPane.margin>
+                  </Text>
+                  <Text fx:id="likeText1" fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" text="Short" GridPane.columnIndex="2" GridPane.rowIndex="1">
+                     <GridPane.margin>
+                        <Insets left="38.0" />
+                     </GridPane.margin>
+                  </Text>
+                  <Text fx:id="likeText2" fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" text="Drama" GridPane.columnIndex="3" GridPane.rowIndex="1">
+                     <GridPane.margin>
+                        <Insets left="38.0" />
+                     </GridPane.margin>
+                  </Text>
+                  <Text fx:id="likeText3" fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" text="Talk-Show" GridPane.columnIndex="4" GridPane.rowIndex="1">
+                     <GridPane.margin>
+                        <Insets left="38.0" />
+                     </GridPane.margin>
+                  </Text>
+                  <Text fx:id="likeText4" fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" text="Documentary" GridPane.columnIndex="1" GridPane.rowIndex="2">
+                     <GridPane.margin>
+                        <Insets left="38.0" />
+                     </GridPane.margin>
+                  </Text>
+                  <Text fx:id="likeText5" fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" text="Film-Noir" GridPane.columnIndex="2" GridPane.rowIndex="2">
+                     <GridPane.margin>
+                        <Insets left="38.0" />
+                     </GridPane.margin>
+                  </Text>
+                  <Text fx:id="likeText6" fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" text="Western" GridPane.columnIndex="3" GridPane.rowIndex="2">
+                     <GridPane.margin>
+                        <Insets left="38.0" />
+                     </GridPane.margin>
+                  </Text>
+                  <Text fx:id="likeText7" fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" text="War" GridPane.rowIndex="2">
+                     <GridPane.margin>
+                        <Insets left="52.0" />
+                     </GridPane.margin>
+                  </Text>
+                  <Text fx:id="likeText8" fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" text="Musical" GridPane.columnIndex="3" GridPane.rowIndex="3">
+                     <GridPane.margin>
+                        <Insets left="38.0" />
+                     </GridPane.margin>
+                  </Text>
+                  <Text fx:id="likeText9" fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" text="Sci-Fi" GridPane.columnIndex="4" GridPane.rowIndex="2">
+                     <GridPane.margin>
+                        <Insets left="38.0" />
+                     </GridPane.margin>
+                  </Text>
+                  <Text fx:id="likeText10" fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" text="Biography" GridPane.columnIndex="2" GridPane.rowIndex="4">
+                     <GridPane.margin>
+                        <Insets left="38.0" />
+                     </GridPane.margin>
+                  </Text>
+                  <Text fx:id="likeText11" fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" text="History" GridPane.rowIndex="3">
+                     <GridPane.margin>
+                        <Insets left="52.0" />
+                     </GridPane.margin>
+                  </Text>
+                  <Text fx:id="likeText12" fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" text="Thriller" GridPane.columnIndex="1" GridPane.rowIndex="3">
+                     <GridPane.margin>
+                        <Insets left="38.0" />
+                     </GridPane.margin>
+                  </Text>
+                  <Text fx:id="likeText13" fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" text="Horror" GridPane.columnIndex="2" GridPane.rowIndex="3">
+                     <GridPane.margin>
+                        <Insets left="38.0" />
+                     </GridPane.margin>
+                  </Text>
+                  <Text fx:id="likeText14" fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" text="Mystery" GridPane.columnIndex="1" GridPane.rowIndex="4">
+                     <GridPane.margin>
+                        <Insets left="38.0" />
+                     </GridPane.margin>
+                  </Text>
+                  <Text fx:id="likeText15" fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" text="Fantasy" GridPane.columnIndex="4" GridPane.rowIndex="4">
+                     <GridPane.margin>
+                        <Insets left="38.0" />
+                     </GridPane.margin>
+                  </Text>
+                  <Text fx:id="likeText16" fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" text="Sport" GridPane.columnIndex="4" GridPane.rowIndex="3">
+                     <GridPane.margin>
+                        <Insets left="38.0" />
+                     </GridPane.margin>
+                  </Text>
+                  <Text fx:id="likeText17" fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" text="Adult" GridPane.rowIndex="4">
+                     <GridPane.margin>
+                        <Insets left="52.0" />
+                     </GridPane.margin>
+                  </Text>
+                  <Text fx:id="likeText18" fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" text="Game-Show" GridPane.columnIndex="3" GridPane.rowIndex="5">
+                     <GridPane.margin>
+                        <Insets left="38.0" />
+                     </GridPane.margin>
+                  </Text>
+                  <Text fx:id="likeText19" fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" text="Music" GridPane.columnIndex="3" GridPane.rowIndex="4">
+                     <GridPane.margin>
+                        <Insets left="38.0" />
+                     </GridPane.margin>
+                  </Text>
+                  <Text fx:id="likeText20" fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" text="Adventure" GridPane.rowIndex="6">
+                     <GridPane.margin>
+                        <Insets left="52.0" />
+                     </GridPane.margin>
+                  </Text>
+                  <Text fx:id="likeText21" fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" text="Action" GridPane.rowIndex="5">
+                     <GridPane.margin>
+                        <Insets left="52.0" />
+                     </GridPane.margin>
+                  </Text>
+                  <Text fx:id="likeText22" fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" text="Crime" GridPane.columnIndex="1" GridPane.rowIndex="5">
+                     <GridPane.margin>
+                        <Insets left="38.0" />
+                     </GridPane.margin>
+                  </Text>
+                  <Text fx:id="likeText23" fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" text="Animation" GridPane.columnIndex="1" GridPane.rowIndex="6">
+                     <GridPane.margin>
+                        <Insets left="38.0" />
+                     </GridPane.margin>
+                  </Text>
+                  <Text fx:id="likeText24" fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" text="Reality-TV" GridPane.columnIndex="2" GridPane.rowIndex="6">
+                     <GridPane.margin>
+                        <Insets left="38.0" />
+                     </GridPane.margin>
+                  </Text>
+                  <Text fx:id="likeText25" fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" text="Family" GridPane.columnIndex="4" GridPane.rowIndex="5">
+                     <GridPane.margin>
+                        <Insets left="38.0" />
+                     </GridPane.margin>
+                  </Text>
+                  <Text fx:id="likeText26" fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" text="News" GridPane.columnIndex="2" GridPane.rowIndex="5">
+                     <GridPane.margin>
+                        <Insets left="38.0" />
+                     </GridPane.margin>
+                  </Text>
+                  <Text fx:id="likeText27" fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" text="Romance" GridPane.rowIndex="1">
+                     <GridPane.margin>
+                        <Insets left="52.0" />
+                     </GridPane.margin>
+                  </Text>
+                  <Button fx:id="likeButtonRomance" mnemonicParsing="false" onAction="#likeButtonPressedRomance" prefHeight="8.0" prefWidth="30.0" style="-fx-background-color: #ffffff;" stylesheets="@myCss.css" GridPane.rowIndex="1">
+                     <GridPane.margin>
+                        <Insets left="15.0" />
+                     </GridPane.margin>
+                  </Button>
+                  <Button fx:id="likeButtonFamily" mnemonicParsing="false" onAction="#likeButtonPressedFamily" prefHeight="8.0" prefWidth="30.0" style="-fx-background-color: #ffffff;" stylesheets="@myCss.css" GridPane.columnIndex="4" GridPane.rowIndex="5" />
+                  <Button fx:id="likeButtonFantasy" mnemonicParsing="false" onAction="#likeButtonPressedFantasy" prefHeight="8.0" prefWidth="30.0" style="-fx-background-color: #ffffff;" stylesheets="@myCss.css" GridPane.columnIndex="4" GridPane.rowIndex="4" />
+                  <Button fx:id="likeButtonSport" mnemonicParsing="false" onAction="#likeButtonPressedSport" prefHeight="8.0" prefWidth="30.0" style="-fx-background-color: #ffffff;" stylesheets="@myCss.css" GridPane.columnIndex="4" GridPane.rowIndex="3" />
+                  <Button fx:id="likeButtonSciFi" mnemonicParsing="false" onAction="#likeButtonPressedSciFi" prefHeight="8.0" prefWidth="30.0" style="-fx-background-color: #ffffff;" stylesheets="@myCss.css" GridPane.columnIndex="4" GridPane.rowIndex="2" />
+                  <Button fx:id="likeButtonTalkShow" mnemonicParsing="false" onAction="#likeButtonPressedTalkShow" prefHeight="8.0" prefWidth="30.0" style="-fx-background-color: #ffffff;" stylesheets="@myCss.css" GridPane.columnIndex="4" GridPane.rowIndex="1" />
+                  <Button fx:id="likeButtonGameShow" mnemonicParsing="false" onAction="#likeButtonPressedGameShow" prefHeight="8.0" prefWidth="30.0" style="-fx-background-color: #ffffff;" stylesheets="@myCss.css" GridPane.columnIndex="3" GridPane.rowIndex="5" />
+                  <Button fx:id="likeButtonMusic" mnemonicParsing="false" onAction="#likeButtonPressedMusic" prefHeight="8.0" prefWidth="30.0" style="-fx-background-color: #ffffff;" stylesheets="@myCss.css" GridPane.columnIndex="3" GridPane.rowIndex="4" />
+                  <Button fx:id="likeButtonMusical" mnemonicParsing="false" onAction="#likeButtonPressedMusical" prefHeight="8.0" prefWidth="30.0" style="-fx-background-color: #ffffff;" stylesheets="@myCss.css" GridPane.columnIndex="3" GridPane.rowIndex="3" />
+                  <Button fx:id="likeButtonWestern" mnemonicParsing="false" onAction="#likeButtonPressedWestern" prefHeight="8.0" prefWidth="30.0" style="-fx-background-color: #ffffff;" stylesheets="@myCss.css" GridPane.columnIndex="3" GridPane.rowIndex="2" />
+                  <Button fx:id="likeButtonDrama" mnemonicParsing="false" onAction="#likeButtonPressedDrama" prefHeight="8.0" prefWidth="30.0" style="-fx-background-color: #ffffff;" stylesheets="@myCss.css" GridPane.columnIndex="3" GridPane.rowIndex="1" />
+                  <Button fx:id="likeButtonRealityTV" mnemonicParsing="false" onAction="#likeButtonPressedRealityTV" prefHeight="8.0" prefWidth="30.0" style="-fx-background-color: #ffffff;" stylesheets="@myCss.css" GridPane.columnIndex="2" GridPane.rowIndex="6" />
+                  <Button fx:id="likeButtonNews" mnemonicParsing="false" onAction="#likeButtonPressedNews" prefHeight="8.0" prefWidth="30.0" style="-fx-background-color: #ffffff;" stylesheets="@myCss.css" GridPane.columnIndex="2" GridPane.rowIndex="5" />
+                  <Button fx:id="likeButtonBiography" mnemonicParsing="false" onAction="#likeButtonPressedBiography" prefHeight="8.0" prefWidth="30.0" style="-fx-background-color: #ffffff;" stylesheets="@myCss.css" GridPane.columnIndex="2" GridPane.rowIndex="4" />
+                  <Button fx:id="likeButtonHorror" mnemonicParsing="false" onAction="#likeButtonPressedHorror" prefHeight="8.0" prefWidth="30.0" style="-fx-background-color: #ffffff;" stylesheets="@myCss.css" GridPane.columnIndex="2" GridPane.rowIndex="3" />
+                  <Button fx:id="likeButtonFilmNoir" mnemonicParsing="false" onAction="#likeButtonPressedFilmNoir" prefHeight="8.0" prefWidth="30.0" style="-fx-background-color: #ffffff;" stylesheets="@myCss.css" GridPane.columnIndex="2" GridPane.rowIndex="2" />
+                  <Button fx:id="likeButtonShort" mnemonicParsing="false" onAction="#likeButtonPressedShort" prefHeight="8.0" prefWidth="30.0" style="-fx-background-color: #ffffff;" stylesheets="@myCss.css" GridPane.columnIndex="2" GridPane.rowIndex="1" />
+                  <Button fx:id="likeButtonAnimation" mnemonicParsing="false" onAction="#likeButtonPressedAnimation" prefHeight="8.0" prefWidth="30.0" style="-fx-background-color: #ffffff;" stylesheets="@myCss.css" GridPane.columnIndex="1" GridPane.rowIndex="6" />
+                  <Button fx:id="likeButtonCrime" mnemonicParsing="false" onAction="#likeButtonPressedCrime" prefHeight="8.0" prefWidth="30.0" style="-fx-background-color: #ffffff;" stylesheets="@myCss.css" GridPane.columnIndex="1" GridPane.rowIndex="5" />
+                  <Button fx:id="likeButtonMystery" mnemonicParsing="false" onAction="#likeButtonPressedMystery" prefHeight="8.0" prefWidth="30.0" style="-fx-background-color: #ffffff;" stylesheets="@myCss.css" GridPane.columnIndex="1" GridPane.rowIndex="4" />
+                  <Button fx:id="likeButtonThriller" mnemonicParsing="false" onAction="#likeButtonPressedThriller" prefHeight="8.0" prefWidth="30.0" style="-fx-background-color: #ffffff;" stylesheets="@myCss.css" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+                  <Button fx:id="likeButtonDocumentary" mnemonicParsing="false" onAction="#likeButtonPressedDocumentary" prefHeight="8.0" prefWidth="30.0" style="-fx-background-color: #ffffff;" stylesheets="@myCss.css" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                  <Button fx:id="likeButtonAdventure" mnemonicParsing="false" onAction="#likeButtonPressedAdventure" prefHeight="8.0" prefWidth="30.0" style="-fx-background-color: #ffffff;" stylesheets="@myCss.css" GridPane.rowIndex="6">
+                     <GridPane.margin>
+                        <Insets left="15.0" />
+                     </GridPane.margin>
+                  </Button>
+                  <Button fx:id="likeButtonAction" mnemonicParsing="false" onAction="#likeButtonPressedAction" prefHeight="8.0" prefWidth="30.0" style="-fx-background-color: #ffffff;" stylesheets="@myCss.css" GridPane.rowIndex="5">
+                     <GridPane.margin>
+                        <Insets left="15.0" />
+                     </GridPane.margin>
+                  </Button>
+                  <Button fx:id="likeButtonAdult" mnemonicParsing="false" onAction="#likeButtonPressedAdult" prefHeight="8.0" prefWidth="30.0" style="-fx-background-color: #ffffff;" stylesheets="@myCss.css" GridPane.rowIndex="4">
+                     <GridPane.margin>
+                        <Insets left="15.0" />
+                     </GridPane.margin>
+                  </Button>
+                  <Button fx:id="likeButtonHistory" mnemonicParsing="false" onAction="#likeButtonPressedHistory" prefHeight="8.0" prefWidth="30.0" style="-fx-background-color: #ffffff;" stylesheets="@myCss.css" GridPane.rowIndex="3">
+                     <GridPane.margin>
+                        <Insets left="15.0" />
+                     </GridPane.margin>
+                  </Button>
+                  <Button fx:id="likeButtonWar" mnemonicParsing="false" onAction="#likeButtonPressedWar" prefHeight="8.0" prefWidth="30.0" style="-fx-background-color: #ffffff;" stylesheets="@myCss.css" GridPane.rowIndex="2">
+                     <GridPane.margin>
+                        <Insets left="15.0" />
+                     </GridPane.margin>
+                  </Button>
+                  <Button fx:id="likeButtonComedy" mnemonicParsing="false" onAction="#likeButtonPressedComedy" prefHeight="8.0" prefWidth="30.0" style="-fx-background-color: #ffffff;" stylesheets="@myCss.css" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                  <Text fx:id="likeText110" fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" text="Manage Liked Genres" GridPane.columnSpan="2147483647" GridPane.halignment="CENTER">
+                     <font>
+                        <Font size="20.0" />
+                     </font>
+                  </Text>
+               </children>
+            </GridPane>
+         </children>
+        </AnchorPane>
+    </children>
+</VBox>

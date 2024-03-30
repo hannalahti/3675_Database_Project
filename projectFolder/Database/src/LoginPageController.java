@@ -1,3 +1,6 @@
+/*
+ * Author: Hanna Lahti
+ */
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -8,7 +11,7 @@ import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.scene.text.Text;
 
-public class LoginPageController {
+public class LoginPageController extends Controller{
 
     @FXML
     private Button loginButton;
@@ -42,9 +45,9 @@ public class LoginPageController {
             return;
 
         if(loginPage)
-            login();
+            login(event);
         else
-            signup();
+            signup(event);
     }
 
     @FXML
@@ -58,30 +61,23 @@ public class LoginPageController {
             showSignupPage();
     }
 
-    void login() {
-        String username = usernameTextField.getText();
-        String password = passwordTextField.getText();
+    void login(ActionEvent e) {
 
-		if(DatabaseAccessor.findUser(username, password)==-1){
-			showErrors();
-			return;
-		}
-
-
+        if (super.db.findUser(usernameTextField.getText(), passwordTextField.getText()) == -1) {
+            showErrors();
+            return;
+        }
+        super.switchWindow(e, "myShows.fxml", loginButton);
         System.out.println("login successful");
     }
 
-    void signup() {
-        String username = usernameTextField.getText();
-        String password = passwordTextField.getText();
+    void signup(ActionEvent e) {
 
-		/*
-		if(db.registerUser(username, password)==-1){
+		if(super.db.registerUser(usernameTextField.getText(), passwordTextField.getText())==-1){
 			showErrors();
 			return;
 		}
-		*
-		 */
+        super.switchWindow(e, "myShows.fxml", loginButton);
         System.out.println("signup successful");
     }
 
@@ -140,9 +136,6 @@ public class LoginPageController {
     }
 
     public void initialize() {
-
-        //db = new DatabaseAccessor();
-
         /*
          * when usernameTextField is selected, error messages are removed
          */
