@@ -2,12 +2,14 @@
 
 
 import static com.mongodb.client.model.Filters.eq;
+import static com.mongodb.client.model.mql.MqlValues.current;
 
 import com.mongodb.Block;
 import com.mongodb.client.*;
 import com.mongodb.client.model.Aggregates;
 import com.mongodb.client.model.Filters;
 import com.mongodb.client.model.Sorts;
+import com.mongodb.client.model.mql.MqlDocument;
 import org.bson.Document;
 import org.bson.conversions.Bson;
 import com.mongodb.client.model.Projections;
@@ -38,6 +40,18 @@ public class DatabaseAccessor {
             db=new DatabaseAccessor();
         return db;
     }
+
+    public static <T> ArrayList<T> removeDuplicates(ArrayList<T> list)
+    {
+        ArrayList<T> newList = new ArrayList<T>();
+        for (T element : list) {
+            if (!newList.contains(element)) {
+                newList.add(element);
+            }
+        }
+        return newList;
+    }
+
 
     public boolean insertLikedGenre(String genreName) {
         if(findLikedGenre().contains(genreName)) {
@@ -149,6 +163,8 @@ public class DatabaseAccessor {
             return true;
         };
         String watchedMedia = findMedia(movieTitle).getFirst();
+
+
         MongoCollection<Document> collection = database.getCollection(WATCHED_COLLECTION);
         Document doc1 = new Document("user_id", user_id).append("movie_title", watchedMedia);
         try {
@@ -194,7 +210,7 @@ public class DatabaseAccessor {
             docList.set(i, docList.get(i).replaceAll("}}","") );
         }
 
-        return docList;
+        return removeDuplicates(docList);
     }
     public ArrayList<String> findMedia(String media_name) {
         MongoCollection<Document> collection = database.getCollection(MEDIA_COLLECTION);
@@ -210,11 +226,11 @@ public class DatabaseAccessor {
             docList.set(i, docList.get(i).replaceAll("Document\\{\\{movie_title=",""));
             docList.set(i, docList.get(i).replaceAll("}}","") );
         }
-
-        return docList;
+        ArrayList<String> d = removeDuplicates(docList);
+        return d;
     }
 
-    public ArrayList<String> findMediaSorted(String mediaName, String sorting) {
+    /*public ArrayList<String> findMediaSorted(String mediaName, String sorting) {
         boolean isAscend = sortWhichWay(sorting);
         String  sortCriteria = sortCriteria(sorting);
 
@@ -267,10 +283,10 @@ public class DatabaseAccessor {
             //System.out.printf("%s %n", s);
         }
 
-
+        docList = removeDuplicates(docList);
         return docList;
     }
-
+*/
     private boolean sortWhichWay(String sorting) {
         if(Objects.equals(sorting, "alphabetical") ||
                 Objects.equals(sorting, "ratingLow")    ||
@@ -359,14 +375,26 @@ public class DatabaseAccessor {
     private List<Document> mediaAndProductionJoin(String mediaName, String sorting, int fCode) {
         boolean isAscend = sortWhichWay(sorting);
         String  sortCriteria = sortCriteria(sorting);
-
+        System.out.printf("joining %n");
         Bson sort = null;
-
+        Document projectStage = new Document("$project",
+                new Document("movie_title", 1)
+                        .append("movie_id", 1)
+                        .append("format", 1)
+                        .append("run_time", 1)
+                        .append("avg_rating",
+                                new Document("$ifNull", Arrays.asList("$avg_rating", 0))
+                        ).append("year",
+                                new Document("$ifNull", Arrays.asList("$year", 0))
+                        )
+        );
         if(sortCriteria.equals("_id")) {
             sort = Aggregates.sort(Sorts.ascending("movie_title"));
         }
         else {
+
             if (isAscend) {
+
                 sort = Aggregates.sort(Sorts.ascending(sortCriteria));
             }
             if (!isAscend) {
@@ -375,7 +403,7 @@ public class DatabaseAccessor {
             }
         }
 
-        MongoCollection<Document> c = database.getCollection(PRODUCTION_COLLECTION);
+        MongoCollection<Document> c = database.getCollection(MEDIA_COLLECTION);
 
         Bson mediaFinder = Filters.regex("movie_title", mediaName);
         Bson onlyForThisUser = Filters.eq("user_id", user_id);
@@ -384,7 +412,7 @@ public class DatabaseAccessor {
                 Projections.excludeId());
 
         Bson combineToProd = Aggregates
-                .lookup(MEDIA_COLLECTION, "movie_id", "movie_id", "media");
+                .lookup(PRODUCTION_COLLECTION, "movie_id", "movie_id", "media");
         Bson out = Aggregates.out("media_production");
         Bson sizeLimiter = Aggregates.limit(20);
         Bson mediaFinds = Aggregates.match(mediaFinder);
@@ -412,6 +440,7 @@ public class DatabaseAccessor {
                         )
                 )
         );
+        System.out.printf("here goes %n");
         Bson usersWatched = Aggregates.match(onlyForThisUser);
         List<Document> results = null;
         if(fCode == 1) {
@@ -424,6 +453,7 @@ public class DatabaseAccessor {
                             redoRoot,
                             mediaFinds,
                             usersWatched,
+                            projectStage,
                             sort,
                             //sizeLimiter,
                             out) ).into(new ArrayList<>());
@@ -433,6 +463,7 @@ public class DatabaseAccessor {
                     combineToProd,
                     replaceRootStage,
                     mediaFinds,
+                    projectStage,
                     sort,
                     out) ).into(new ArrayList<>());
 
@@ -457,12 +488,100 @@ public class DatabaseAccessor {
         return results;
     }
     public ArrayList<String> findWatchedMediaSorted(String mediaName, String sorting) {
-        List<Document> results = mediaAndProductionJoin(mediaName, sorting, 1);
+        ArrayList<Document> results = new ArrayList<>();//mediaAndProductionJoin(mediaName, sorting, 1);
+        boolean isAscend = sortWhichWay(sorting);
+        String  sortCriteria = sortCriteria(sorting);
+
+        Bson onlyIDs = Projections.fields(
+                Projections.include("movie_id"),
+                Projections.excludeId());
+        Bson mediaFinder = Filters.regex("movie_title", mediaName);
+        Bson onlyForThisUser = Filters.eq("user_id", user_id);
+        Bson criteria = Filters.and(mediaFinder , onlyForThisUser);
+        Bson sort = null;
+
+        if(sortCriteria.equals("_id")) {
+            sort = (Sorts.ascending("movie_title"));
+        }
+        else {
+            if (isAscend) {
+                sort = (Sorts.ascending(sortCriteria));
+            }
+            if (!isAscend) {
+                sort = (Sorts.descending(sortCriteria));
+
+            }
+        }
+        List<Document> getIDs = new ArrayList<>();
+        database.getCollection(WATCHED_COLLECTION)
+                .find(criteria)
+                .into(getIDs);
+        ArrayList<String> temp = new ArrayList<String>();
+        ArrayList<String> temp2 = new ArrayList<String>();
+        List<Document> t1 = new ArrayList<>();
+        List<Document> t800 = new ArrayList<>();
+        for(Document i: getIDs) {
+            temp.add((String) i.get("movie_title"));
+            //System.out.printf("%s %n", i);
+        }
+
+        if(sortCriteria.equals("avg_rating") || sortCriteria.equals("year")) {
+            database.getCollection(MEDIA_COLLECTION)
+                    .find(Filters.in("movie_title", temp))
+                    .into(t1);
+            ArrayList<String> t2 = new ArrayList<String>();
+            for(Document i: t1) {
+                t2.add((String) i.get("movie_id"));
+                //System.out.printf("%s %n", i);
+            }
+            t1.clear();
+            database.getCollection(PRODUCTION_COLLECTION)
+                    .find(Filters.in("movie_id", t2))
+                    .sort(sort)
+                    .into(t1);
+            for(Document i: t1) {
+                temp2.add((String) i.get("movie_id"));
+                System.out.printf("%s %n", i);
+            }
+            database.getCollection(MEDIA_COLLECTION)
+                    .find( Filters.in("movie_id", t2) )
+                    //.sort( (Sorts.ascending("movie_title")) )
+                    .into(t800);
+            //for(Document i: t800) {
+                //System.out.printf("%s %n", i);
+           // }
+            List<Document> r = new ArrayList<>();
+            ArrayList<String> movieIDs = new ArrayList<String>();
+            r.addAll(t1);
+            r.addAll(t800);
+            for(Document i: r) {
+                movieIDs.add((String) i.get("movie_id"));
+                System.out.printf("%s %n", i);
+            }
+            for(String i: movieIDs) {
+                database.getCollection(MEDIA_COLLECTION)
+                        .find( Filters.in("movie_id", i) )
+                        //.sort( (Sorts.ascending("movie_title")) )
+                        .into(results);
+            }
+
+        }
+        else  {
+            database.getCollection(MEDIA_COLLECTION)
+                    .find(Filters.in("movie_title", temp))
+                    .sort(sort)
+                    .into(results);
+        }
+
+        //results = removeDuplicates(results);
+
+
 
         ArrayList<String> docList = new ArrayList<String>();
+        System.out.printf("firing %n");
         for(Document i: results) {
             try {
-                System.out.printf("%s %n", i.get("user_id"));
+                //System.out.printf("%s %n", i.get("user_id"));
 
                 String s = (String) i.get("movie_title");
                 docList.add((String) i.get("movie_title"));
@@ -474,8 +593,9 @@ public class DatabaseAccessor {
 
         }
 
+        //docList.removeAll(null);
 
-        return docList;
+        return removeDuplicates(docList);
     }
 
     // does not work
@@ -484,80 +604,100 @@ public class DatabaseAccessor {
     // but uses the LIKES_COLLECTION
     // cant lookup
     public ArrayList<String> findLikedMediaSorted(String mediaName, String sorting) {
+        ArrayList<Document> results = new ArrayList<>();//mediaAndProductionJoin(mediaName, sorting, 1);
         boolean isAscend = sortWhichWay(sorting);
         String  sortCriteria = sortCriteria(sorting);
 
+        Bson onlyIDs = Projections.fields(
+                Projections.include("movie_id"),
+                Projections.excludeId());
+        Bson mediaFinder = Filters.regex("movie_title", mediaName);
+        Bson onlyForThisUser = Filters.eq("user_id", user_id);
+        Bson criteria = Filters.and(mediaFinder , onlyForThisUser);
         Bson sort = null;
 
         if(sortCriteria.equals("_id")) {
-            sort = Aggregates.sort(Sorts.ascending("movie_title"));
+            sort = (Sorts.ascending("movie_title"));
         }
         else {
             if (isAscend) {
-                sort = Aggregates.sort(Sorts.ascending(sortCriteria));
+                sort = (Sorts.ascending(sortCriteria));
             }
             if (!isAscend) {
-                sort = Aggregates.sort(Sorts.descending(sortCriteria));
+                sort = (Sorts.descending(sortCriteria));
 
             }
         }
+        List<Document> getIDs = new ArrayList<>();
+        database.getCollection(LIKES_COLLECTION)
+                .find(criteria)
+                .into(getIDs);
+        ArrayList<String> temp = new ArrayList<String>();
+        List<Document> t1 = new ArrayList<>();
+        List<Document> t800 = new ArrayList<>();
+        for(Document i: getIDs) {
+            temp.add((String) i.get("movie_title"));
+            //System.out.printf("%s %n", i);
+        }
 
-        MongoCollection<Document> c = database.getCollection(PRODUCTION_COLLECTION);
+        if(sortCriteria.equals("avg_rating") || sortCriteria.equals("year")) {
+            database.getCollection(MEDIA_COLLECTION)
+                    .find(Filters.in("movie_title", temp))
+                    .into(t1);
+            ArrayList<String> t2 = new ArrayList<String>();
+            for(Document i: t1) {
+                t2.add((String) i.get("movie_id"));
+                //System.out.printf("%s %n", i);
+            }
+            t1.clear();
+            database.getCollection(PRODUCTION_COLLECTION)
+                    .find(Filters.in("movie_id", t2))
+                    .sort(sort)
+                    .into(t1);
+            for(Document i: t1) {
+                t2.add((String) i.get("movie_id"));
+                System.out.printf("%s %n", i);
+            }
+            database.getCollection(PRODUCTION_COLLECTION)
+                    .find( Filters.and(Filters.nin("movie_id", t2),
+                            Filters.in("movie_id", t1) ) )
+                    //.sort( (Sorts.ascending("movie_title")) )
+                    .into(t800);
+            //for(Document i: t800) {
+            //System.out.printf("%s %n", i);
+            // }
+            List<Document> r = new ArrayList<>();
+            ArrayList<String> movieIDs = new ArrayList<String>();
+            r.addAll(t1);
+            r.addAll(t800);
+            for(Document i: r) {
+                movieIDs.add((String) i.get("movie_id"));
+                System.out.printf("%s %n", i);
+            }
+            for(String i: movieIDs) {
+                database.getCollection(MEDIA_COLLECTION)
+                        .find( Filters.in("movie_id", i) )
+                        //.sort( (Sorts.ascending("movie_title")) )
+                        .into(results);
+            }
 
-        Bson mediaFinder = Filters.regex("movie_title", mediaName);
-        Bson onlyForThisUser = Filters.eq("user_id", user_id);
-        Bson onlyNames = Projections.fields(
-                Projections.include("movie_title"),
-                Projections.excludeId());
+        }
+        else  {
+            database.getCollection(MEDIA_COLLECTION)
+                    .find(Filters.in("movie_title", temp))
+                    .sort(sort)
+                    .into(results);
+        }
 
-        Bson combineToProd = Aggregates
-                .lookup(MEDIA_COLLECTION, "movie_id", "movie_id", "media");
-        Bson out = Aggregates.out("liked_media_production");
-        Bson sizeLimiter = Aggregates.limit(20);
-        Bson mediaFinds = Aggregates.match(mediaFinder);
-        Document replaceRootStage = new Document("$replaceRoot",
-                new Document("newRoot",
-                        new Document("$mergeObjects",
-                                Arrays.asList(
-                                        new Document("$arrayElemAt", Arrays.asList("$media", 0)),
-                                        "$$ROOT"
-                                )
-                        )
-                )
-        );
-        Document unwindStage = new Document("$unwind", "$media");
-        Bson combineWatched = Aggregates
-                .lookup(LIKES_COLLECTION, "movie_title", "movie_title", "watched");
-        Document redoRoot = new Document("$replaceRoot",
-                new Document("newRoot",
-                        new Document("$mergeObjects",
-                                Arrays.asList(
-                                        new Document("$arrayElemAt", Arrays.asList("$media", 0)),
-                                        new Document("$arrayElemAt", Arrays.asList("$watched", 0)),
-                                        "$$ROOT"
-                                )
-                        )
-                )
-        );
-        Bson usersWatched = Aggregates.match(onlyForThisUser);
+        //results = removeDuplicates(results);
 
-        List<Document> results = c.aggregate(
-                Arrays.asList(
-                        combineToProd,
-                        //unwindStage,
-                        replaceRootStage,
-                        combineWatched,
-                        redoRoot,
-                        mediaFinds,
-                        usersWatched,
-                        sort,
-                        sizeLimiter,
-                        out) ).into(new ArrayList<>());
+
 
         ArrayList<String> docList = new ArrayList<String>();
+        System.out.printf("firing %n");
         for(Document i: results) {
             try {
-                System.out.printf("%s %n", i.get("user_id"));
+                //System.out.printf("%s %n", i.get("user_id"));
 
                 String s = (String) i.get("movie_title");
                 docList.add((String) i.get("movie_title"));
@@ -569,8 +709,9 @@ public class DatabaseAccessor {
 
         }
 
+        //docList.removeAll(null);
 
-        return docList;
+        return removeDuplicates(docList);
     }
 
     public ArrayList<String> findDetails(String movieName) {
@@ -624,6 +765,251 @@ public class DatabaseAccessor {
         return details;
     }
 
+    public ArrayList<String> findMediaSorted(String mediaName, String sorting) {
+        ArrayList<Document> results = new ArrayList<>();//mediaAndProductionJoin(mediaName, sorting, 1);
+        boolean isAscend = sortWhichWay(sorting);
+        String  sortCriteria = sortCriteria(sorting);
+
+        Bson onlyIDs = Projections.fields(
+                Projections.include("movie_id"),
+                Projections.excludeId());
+        Bson mediaFinder = Filters.regex("movie_title", mediaName);
+        //Bson onlyForThisUser = Filters.eq("user_id", user_id);
+        Bson criteria = Filters.and(mediaFinder);// , onlyForThisUser);
+        Bson sort = null;
+
+        if(sortCriteria.equals("_id")) {
+            sort = (Sorts.ascending("movie_title"));
+        }
+        else {
+            if (isAscend) {
+                sort = (Sorts.ascending(sortCriteria));
+            }
+            if (!isAscend) {
+                sort = (Sorts.descending(sortCriteria));
+
+            }
+        }
+        List<Document> getIDs = new ArrayList<>();
+        database.getCollection(MEDIA_COLLECTION)
+                .find(criteria)
+                .into(getIDs);
+        ArrayList<String> temp = new ArrayList<String>();
+        List<Document> t1 = new ArrayList<>();
+        List<Document> t800 = new ArrayList<>();
+        for(Document i: getIDs) {
+            temp.add((String) i.get("movie_title"));
+            //System.out.printf("%s %n", i);
+        }
+
+        if(sortCriteria.equals("avg_rating") || sortCriteria.equals("year")) {
+            database.getCollection(MEDIA_COLLECTION)
+                    .find(Filters.in("movie_title", temp))
+                    .into(t1);
+            ArrayList<String> t2 = new ArrayList<String>();
+            for(Document i: t1) {
+                t2.add((String) i.get("movie_id"));
+                //System.out.printf("%s %n", i);
+            }
+            t1.clear();
+            database.getCollection(PRODUCTION_COLLECTION)
+                    .find(Filters.in("movie_id", t2))
+                    .sort(sort)
+                    .into(t1);
+            for(Document i: t1) {
+                t2.add((String) i.get("movie_id"));
+                System.out.printf("%s %n", i);
+            }
+            database.getCollection(PRODUCTION_COLLECTION)
+                    .find( Filters.and(Filters.nin("movie_id", t2),
+                            Filters.in("movie_id", t1) ) )
+                    //.sort( (Sorts.ascending("movie_title")) )
+                    .into(t800);
+            //for(Document i: t800) {
+            //System.out.printf("%s %n", i);
+            // }
+            List<Document> r = new ArrayList<>();
+            ArrayList<String> movieIDs = new ArrayList<String>();
+            r.addAll(t1);
+            r.addAll(t800);
+            for(Document i: r) {
+                movieIDs.add((String) i.get("movie_id"));
+                System.out.printf("%s %n", i);
+            }
+            for(String i: movieIDs) {
+                database.getCollection(MEDIA_COLLECTION)
+                        .find( Filters.in("movie_id", i) )
+                        //.sort( (Sorts.ascending("movie_title")) )
+                        .into(results);
+            }
+
+        }
+        else  {
+            database.getCollection(MEDIA_COLLECTION)
+                    .find(Filters.in("movie_title", temp))
+                    .sort(sort)
+                    .into(results);
+        }
+
+        //results = removeDuplicates(results);
+
+
+
+        ArrayList<String> docList = new ArrayList<String>();
+        System.out.printf("generally speaking %n");
+        for(Document i: results) {
+            try {
+                //System.out.printf("%s %n", i.get("user_id"));
+
+                String s = (String) i.get("movie_title");
+                docList.add((String) i.get("movie_title"));
+                System.out.printf("%s %n", i);
+
+
+            }
+            catch(Exception e) {}
+
+        }
+
+        //docList.removeAll(null);
+
+        return removeDuplicates(docList);
+    }
+
+    public ArrayList<String> findMediaParamSorted(String mediaName,
+                                                  int yearfrom,
+                                                  int yearto,
+                                                  double runtimefrom,
+                                                  double runtimeto,
+                                                  double ratingfrom,
+                                                  double ratingto,
+                                                  String[] format,
+                                                  String[] genre,
+                                                  String sorting) {
+        ArrayList<Document> results = new ArrayList<>();//mediaAndProductionJoin(mediaName, sorting, 1);
+        boolean isAscend = sortWhichWay(sorting);
+        String  sortCriteria = sortCriteria(sorting);
+
+        Bson searchFinder = Filters.regex("movie_title", mediaName);
+        Bson formatFinder = Filters.in("format", format);
+        Bson runtimeFinder= Filters.and(
+                Filters.lt("run_time", runtimeto),
+                Filters.gt("run_time", runtimefrom)
+        );
+
+        //Bson idFinder = Filters.in("movie_id", mediaName);
+        Bson yearFinder= Filters.and(
+                Filters.lt("year", yearto),
+                Filters.gt("year", yearfrom)
+        );
+        Bson ratingFinder= Filters.and(
+                Filters.lt("avg_rating", ratingto),
+                Filters.gt("avg_rating", ratingfrom)
+        );
+
+        Bson genreFinder = Filters.in("genres", genre);
+        Bson onlyForThisUser = Filters.eq("user_id", user_id);
+
+        Bson sort = null;
+
+        if(sortCriteria.equals("_id")) {
+            sort = (Sorts.ascending("movie_title"));
+        }
+        else {
+            if (isAscend) {
+                sort = (Sorts.ascending(sortCriteria));
+            }
+            if (!isAscend) {
+                sort = (Sorts.descending(sortCriteria));
+
+            }
+        }
+
+        ArrayList<String> mediaIDsTotal = new ArrayList<>();
+        List<Document> mediaInCriteria = new ArrayList<>();
+        Bson mediaCriteria = Filters.and(
+                searchFinder,
+                formatFinder,
+                runtimeFinder
+        );
+        database.getCollection(MEDIA_COLLECTION)
+                .find(mediaCriteria)
+                .into(mediaInCriteria);
+
+        for(Document i: mediaInCriteria) {
+            mediaIDsTotal.add((String) i.get("media_id"));
+        }
+
+        ArrayList<String> ProdIDsTotal = new ArrayList<>();
+        List<Document> prodInCriteria = new ArrayList<>();
+
+        Bson idFinder = Filters.in("movie_id", mediaIDsTotal);
+        Bson prodCriteria= Filters.and(
+                idFinder,
+                ratingFinder,
+                yearFinder
+        );
+        database.getCollection(PRODUCTION_COLLECTION)
+                .find(prodCriteria)
+                .into(prodInCriteria);
+
+        for(Document i: prodInCriteria) {
+            ProdIDsTotal.add((String) i.get("media_id"));
+        }
+
+        ArrayList<String> genreIDsTotal = new ArrayList<>();
+        List<Document> genreInCriteria = new ArrayList<>();
+        Bson genreCriteria = Filters.and(
+                idFinder,
+                genreFinder
+        );
+        database.getCollection(BELONGS)
+                .find(genreCriteria)
+                .into(genreInCriteria);
+
+        for(Document i: genreInCriteria) {
+            genreIDsTotal.add((String) i.get("media_id"));
+        }
+
+        mediaIDsTotal.retainAll(ProdIDsTotal);
+        mediaIDsTotal.retainAll(genreIDsTotal);
+
+        List<Document> r = new ArrayList<>();
+
+        if(sortCriteria.equals("avg_rating") || sortCriteria.equals("year")) {
+            database.getCollection(PRODUCTION_COLLECTION)
+                    .find( Filters.in("media_id", mediaIDsTotal) )
+                    .sort(sort)
+                    .into(r);
+            ArrayList<String> finalStringSet = new ArrayList<>();
+            for(Document i: r) {
+                finalStringSet.add((String) i.get("media_id"));
+            }
+            database.getCollection(MEDIA_COLLECTION)
+                    .find(Filters.in("movie_id", finalStringSet))
+                    .into(results);
+        }
+        else  {
+            database.getCollection(MEDIA_COLLECTION)
+                    .find(Filters.in("movie_id", mediaIDsTotal))
+                    .sort(sort)
+                    .into(results);
+        }
+
+        ArrayList<String> docList = new ArrayList<String>();
+        System.out.printf("putting it bluntly %n");
+        for(Document i: results) {
+            try {
+                String s = (String) i.get("movie_title");
+                docList.add((String) i.get("movie_title"));
+                System.out.printf("%s %n", i);
+            }
+            catch(Exception e) {}
+
+        }
+
+        return removeDuplicates(docList);
+    }
     private DatabaseAccessor() {
 
         if(db != null) {
