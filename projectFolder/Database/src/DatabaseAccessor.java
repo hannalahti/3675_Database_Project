@@ -577,6 +577,74 @@ public class DatabaseAccessor {
         return details;
     }
 
+    public ArrayList<String> findMediaParamSorted(String search,
+                                                  int yearfrom,
+                                                  int yearto,
+                                                  double runtimefrom,
+                                                  double runtimeto,
+                                                  double ratingfrom,
+                                                  double ratingto,
+                                                  String[] format,
+                                                  String[] genre, String sorting)
+    {
+        boolean isAscend = sortWhichWay(sorting);
+        String  sortCriteria = sortCriteria(sorting);
+
+        Bson sort = null;
+
+        if(sortCriteria.equals("_id")) {
+            sort = Aggregates.sort(Sorts.ascending("movie_title"));
+        }
+        else {
+            if (isAscend) {
+                sort = Aggregates.sort(Sorts.ascending(sortCriteria));
+            }
+            if (!isAscend) {
+                sort = Aggregates.sort(Sorts.descending(sortCriteria));
+
+            }
+        }
+
+        ArrayList<String> movieIDs = new ArrayList<String>();
+        List<Document> docList = mediaAndProductionJoin(search, sorting);
+
+        for(Document i: docList) {
+            boolean isInYearRange = ( (int)i.get("year") > yearfrom && (int)i.get("year") < yearto );
+            boolean isFormatted = false;
+            for(String k: format) {
+                if( k.equals( (String) i.get("format") )) {
+                    isFormatted = true;
+                }
+            }
+            boolean isInRatingRange = ( (double)i.get("avg_rating") > ratingfrom && (double)i.get("avg_rating") < ratingto );
+            boolean isInRuntimeRange = ( (double)i.get("run_time") > runtimefrom && (double)i.get("run_time") < runtimeto );
+            if(isInYearRange && isFormatted && isInRatingRange && isInRuntimeRange) {
+                movieIDs.add((String) i.get("movie_id"));
+            }
+        }
+
+        MongoCollection<Document> c = database.getCollection(BELONGS);
+        Bson hasGenreFilter = Filters.in("movie_id", movieIDs);
+        Bson matchesGenre = Filters.in("genres", genre);
+        Bson finalCriteria = Filters.and(hasGenreFilter, matchesGenre);
+        List<Document> moviesInGenre = new ArrayList<>();
+        c.find(finalCriteria).into(moviesInGenre);
+
+        List<Document> movieNames = new ArrayList<>();
+        for(Document i: moviesInGenre) {
+            MongoCollection<Document> collection = database.getCollection(MEDIA_COLLECTION);
+            collection.find(hasGenreFilter).into(movieNames);
+            //System.out.printf("%s %n", i.get("movie_id"));
+        }
+        ArrayList<String> results = new ArrayList<String>();
+        for(Document i: movieNames) {
+            //System.out.printf("%s %n", i.get("movie_title"));
+            results.add((String) i.get("movie_title"));
+        }
+
+        return results;
+    }
+
     public DatabaseAccessor() {
 
         try  {

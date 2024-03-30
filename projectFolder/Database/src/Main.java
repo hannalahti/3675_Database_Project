@@ -112,6 +112,21 @@ public class Main extends Application {
             System.out.printf("%s %n", i);
         }
 
+        System.out.printf("%n%nParams Search Example %n");
+        c = db.findMediaParamSorted("",
+        1900,
+        2020,
+        0,
+        45,
+        0,
+        10,
+         new String[]{"movie"},
+         new String[]{"Drama"},
+        "alpha");
+        for(String i : c) {
+            System.out.printf("%s %n", i);
+        }
+
         launch(args);
 
     }
