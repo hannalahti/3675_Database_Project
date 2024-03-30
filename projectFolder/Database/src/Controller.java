@@ -11,12 +11,6 @@ import javafx.stage.Stage;
 
 public class Controller {
 
-    static DatabaseAccessor db;
-
-    public Controller(){
-        db = new DatabaseAccessor();
-    }
-
     private Stage stage;
     private Parent root;
     public void switchWindow(ActionEvent event, String filename, Button button){

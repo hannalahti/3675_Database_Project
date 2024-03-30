@@ -334,11 +334,11 @@ public class GenreController extends Controller{
 
     private void handleLikeButtonAction(String genre, Button button) {
         if (findIndex(genre, likedGenres) != -1) {
-            super.db.deleteLikedMedia(genre);
+            DatabaseAccessor.db.deleteLikedMedia(genre);
             setHeartButton(button, false);
             likedGenres.remove(genre);
         } else {
-            super.db.insertLikedGenre(genre);
+            DatabaseAccessor.db.insertLikedGenre(genre);
             setHeartButton(button, true);
             likedGenres.add(genre);
         }
@@ -373,7 +373,7 @@ public class GenreController extends Controller{
     }
 
     void setAllButtons(){
-        likedGenres = super.db.findLikedGenre();
+        likedGenres = DatabaseAccessor.db.findLikedGenre();
 
         for(int i=0; i< likedGenres.size(); i++){
             int index = findIndex(likedGenres.get(i),genres);

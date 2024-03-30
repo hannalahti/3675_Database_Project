@@ -320,8 +320,8 @@ public class MyShowsController extends Controller{
     void likeButtonPressed(ActionEvent event) {
         setLikedButton(valueOf(!isLiked));
         if(isLiked)
-            super.db.insertLikedMedia(selected);
-        else super.db.deleteLikedMedia(selected);
+            DatabaseAccessor.db.insertLikedMedia(selected);
+        else DatabaseAccessor.db.deleteLikedMedia(selected);
     }
 
     @FXML
@@ -333,7 +333,7 @@ public class MyShowsController extends Controller{
     void searchButtonPressed(ActionEvent event) {
         loadingIndicator.setVisible(true);
         search = searchTextField.getText();
-        ObservableList<String> media = FXCollections.observableArrayList(super.db.findMedia(search));
+        ObservableList<String> media = FXCollections.observableArrayList(DatabaseAccessor.db.findMedia(search));
         mediaListView.setItems(media);
         loadingIndicator.setVisible(false);
     }
@@ -346,8 +346,8 @@ public class MyShowsController extends Controller{
     void watchedButtonPressed(ActionEvent event) {
         setWatchedButton(valueOf(!isWatched));
         if(isWatched)
-            super.db.insertWatchedMedia(selected);
-        else super.db.deleteWatchedMedia(selected);
+            DatabaseAccessor.db.insertWatchedMedia(selected);
+        else DatabaseAccessor.db.deleteWatchedMedia(selected);
     }
 
     public void initialize(){
@@ -471,10 +471,10 @@ public class MyShowsController extends Controller{
         ObservableList<String> media;
         System.out.println(menu+sort);
         if(menu.equals("search"))
-            media = FXCollections.observableArrayList( super.db.findMediaSorted(search, s) );
+            media = FXCollections.observableArrayList( DatabaseAccessor.db.findMediaSorted(search, s) );
         else if(menu.equals("liked"))
-            media = FXCollections.observableArrayList( super.db.findLikedMediaSorted(search, s) );
-        else media = FXCollections.observableArrayList( super.db.findWatchedMediaSorted(search, s) );
+            media = FXCollections.observableArrayList( DatabaseAccessor.db.findLikedMediaSorted(search, s) );
+        else media = FXCollections.observableArrayList( DatabaseAccessor.db.findWatchedMediaSorted(search, s) );
 
         mediaListView.setItems(media);
     }
@@ -510,14 +510,14 @@ public class MyShowsController extends Controller{
         sort="default";
         searchButton.setVisible(false);
         searchTextField.setVisible(false);
-        ObservableList<String> likedList = FXCollections.observableArrayList(db.findLikedMedia());
+        ObservableList<String> likedList = FXCollections.observableArrayList(DatabaseAccessor.db.findLikedMedia());
         mediaListView.setItems(likedList);
     }
 
     void setWatchedList(){
         menu="watched";
         sort="default";
-        ObservableList<String> watchedList = FXCollections.observableArrayList(db.findWatchedMedia());
+        ObservableList<String> watchedList = FXCollections.observableArrayList(DatabaseAccessor.db.findWatchedMedia());
         mediaListView.setItems(watchedList);
     }
 
@@ -559,7 +559,7 @@ public class MyShowsController extends Controller{
     Showing information on individual selected media
      */
     void setMediaView(String title){
-        ArrayList<String> info = super.db.findDetails(title);
+        ArrayList<String> info = DatabaseAccessor.db.findDetails(title);
 
         titleText.setText(info.get(0));
         yearText.setText(info.get(6));

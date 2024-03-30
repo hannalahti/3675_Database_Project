@@ -1,3 +1,4 @@
+
 /*
  * Author: Hanna Lahti
  */
@@ -63,23 +64,24 @@ public class LoginPageController extends Controller{
 
     void login(ActionEvent e) {
 
-        if (super.db.findUser(usernameTextField.getText(), passwordTextField.getText()) == -1) {
+        if (DatabaseAccessor.db.findUser(usernameTextField.getText(), passwordTextField.getText()) == -1) {
             showErrors();
             return;
         }
         super.switchWindow(e, "myShows.fxml", loginButton);
         System.out.println("login successful");
-        System.out.printf("user id :%d %n", db.user_id);
+        System.out.printf("user id :%d %n", DatabaseAccessor.db.user_id);
     }
 
     void signup(ActionEvent e) {
 
-		if(super.db.registerUser(usernameTextField.getText(), passwordTextField.getText())==-1){
-			showErrors();
-			return;
-		}
+        if(DatabaseAccessor.db.registerUser(usernameTextField.getText(), passwordTextField.getText())==-1){
+            showErrors();
+            return;
+        }
         super.switchWindow(e, "myShows.fxml", loginButton);
         System.out.println("signup successful");
+        System.out.printf("user id :%d %n", DatabaseAccessor.db.user_id);
     }
 
     void showSignupPage() {

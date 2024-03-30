@@ -1,5 +1,6 @@
 
 
+
 import static com.mongodb.client.model.Filters.eq;
 
 import com.mongodb.Block;
@@ -17,7 +18,7 @@ public class DatabaseAccessor {
 
     static DatabaseAccessor db;
 
-    long user_id = -1;
+    long user_id;
     private MongoClient mongoClient;
     private static MongoDatabase database;
     private final String DATABASE_NAME = "DatabaseProject";
@@ -32,6 +33,11 @@ public class DatabaseAccessor {
     private final String WATCHED_COLLECTION = "Watched";
     private final String LIKES_COLLECTION = "Likes";
 
+    public static DatabaseAccessor getDb() {
+        if(db==null)
+            db=new DatabaseAccessor();
+        return db;
+    }
 
     public boolean insertLikedGenre(String genreName) {
         if(findLikedGenre().contains(genreName)) {
@@ -579,7 +585,7 @@ public class DatabaseAccessor {
         return details;
     }
 
-    public DatabaseAccessor() {
+    private DatabaseAccessor() {
 
         if(db != null) {
             return;

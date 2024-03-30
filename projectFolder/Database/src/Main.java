@@ -1,3 +1,4 @@
+
 import com.mongodb.client.*;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
@@ -32,7 +33,7 @@ public class Main extends Application {
     @Override
     public void start(Stage stage) throws Exception {
 
-        Parent root = FXMLLoader.load(getClass().getResource("myShows.fxml"));
+        Parent root = FXMLLoader.load(getClass().getResource("login.fxml"));
 
         Scene scene = new Scene(root);
         stage.setTitle("Media");
@@ -128,6 +129,7 @@ public class Main extends Application {
             System.out.printf("%s %n", i);
         }
 */
+        DatabaseAccessor.getDb();
         launch(args);
 
     }
