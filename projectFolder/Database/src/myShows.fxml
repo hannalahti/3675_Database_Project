@@ -92,7 +92,7 @@
                <content>
                   <AnchorPane minWidth="0.0" prefWidth="200.0" style="-fx-background-color: Arial Rounded MT Bold;">
                      <children>
-                        <VBox layoutX="-4.0" layoutY="-1.0" minHeight="474.0" prefHeight="478.0" prefWidth="242.0" style="-fx-background-color: #000000;">
+                        <VBox layoutX="-4.0" layoutY="-1.0" minHeight="474.0" prefWidth="242.0" style="-fx-background-color: #000000;">
                            <children>
                               <HBox>
                                  <children>
