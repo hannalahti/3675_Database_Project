@@ -354,7 +354,9 @@ public class DatabaseAccessor {
         }
     }
 
-    private List<Document> mediaAndProductionJoin(String mediaName, String sorting) {
+    // mediaAndProductionJoin does not work at all
+    // clean up findWatchedMediaSorted and findDetails
+    private List<Document> mediaAndProductionJoin(String mediaName, String sorting, int fCode) {
         boolean isAscend = sortWhichWay(sorting);
         String  sortCriteria = sortCriteria(sorting);
 
@@ -411,24 +413,51 @@ public class DatabaseAccessor {
                 )
         );
         Bson usersWatched = Aggregates.match(onlyForThisUser);
+        List<Document> results = null;
+        if(fCode == 1) {
+            results = c.aggregate(
+                    Arrays.asList(
+                            combineToProd,
+                            //unwindStage,
+                            replaceRootStage,
+                            combineWatched,
+                            redoRoot,
+                            mediaFinds,
+                            usersWatched,
+                            sort,
+                            //sizeLimiter,
+                            out) ).into(new ArrayList<>());
+        }
+        else if(fCode == 2){
+            results = c.aggregate( Arrays.asList(
+                    combineToProd,
+                    replaceRootStage,
+                    mediaFinds,
+                    sort,
+                    out) ).into(new ArrayList<>());
 
-        List<Document> results = c.aggregate(
-                Arrays.asList(
-                        combineToProd,
-                        //unwindStage,
-                        replaceRootStage,
-                        combineWatched,
-                        redoRoot,
-                        mediaFinds,
-                        usersWatched,
-                        sort,
-                        //sizeLimiter,
-                        out) ).into(new ArrayList<>());
+           /* results = c.aggregate(
+                    Arrays.asList(
+                            combineToProd,
+                            //unwindStage,
+                            replaceRootStage,
+                            //combineWatched,
+                            //redoRoot,
+                            mediaFinds,
+                            //usersWatched,
+                            sort,
+                            //sizeLimiter,
+                            out) ).into(new ArrayList<>()); */
+        }
 
+        System.out.printf("heres the docs %n");
+        for(Document i: results) {
+            System.out.printf("%s %n", i);
+        }
         return results;
     }
     public ArrayList<String> findWatchedMediaSorted(String mediaName, String sorting) {
-        List<Document> results = mediaAndProductionJoin(mediaName, sorting);
+        List<Document> results = mediaAndProductionJoin(mediaName, sorting, 1);
 
         ArrayList<String> docList = new ArrayList<String>();
         for(Document i: results) {
@@ -545,6 +574,7 @@ public class DatabaseAccessor {
     }
 
     public ArrayList<String> findDetails(String movieName) {
+        System.out.printf("is finding.exe? %n");
         MongoCollection<Document> collection = database.getCollection(MEDIA_COLLECTION);
         Bson mediaFinder = Filters.regex("movie_title", movieName);
 
@@ -567,8 +597,9 @@ public class DatabaseAccessor {
             details.add("true");
         else
             details.add("false");
-
-        Document results = mediaAndProductionJoin(movieName, "alpha").getFirst();
+        System.out.printf("join tables? %s %n", movieName);
+        Document results = mediaAndProductionJoin(movieName, "alpha", 2).getFirst();
+        System.out.printf("%s %n", results);
 
         details.add((String) results.get("avg_rating").toString());
         details.add( (String) results.get("year").toString() );
