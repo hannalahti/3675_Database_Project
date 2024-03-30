@@ -346,7 +346,7 @@ public class DatabaseAccessor {
         }
     }
 
-    public ArrayList<String> findWatchedMediaSorted(String mediaName, String sorting) {
+    private List<Document> mediaAndProductionJoin(String mediaName, String sorting) {
         boolean isAscend = sortWhichWay(sorting);
         String  sortCriteria = sortCriteria(sorting);
 
@@ -417,14 +417,19 @@ public class DatabaseAccessor {
                         //sizeLimiter,
                         out) ).into(new ArrayList<>());
 
+        return results;
+    }
+    public ArrayList<String> findWatchedMediaSorted(String mediaName, String sorting) {
+        List<Document> results = mediaAndProductionJoin(mediaName, sorting);
+
         ArrayList<String> docList = new ArrayList<String>();
         for(Document i: results) {
             try {
-                //System.out.printf("%s %n", i.get("user_id"));
+                System.out.printf("%s %n", i.get("user_id"));
 
                 String s = (String) i.get("movie_title");
                     docList.add((String) i.get("movie_title"));
-                    //System.out.printf("%s %n", i);
+                    System.out.printf("%s %n", i);
 
 
             }
@@ -434,6 +439,142 @@ public class DatabaseAccessor {
 
 
         return docList;
+    }
+
+    // does not work
+    // idk y
+    // exactly the same as the above method
+    // but uses the LIKES_COLLECTION
+    // cant lookup
+    public ArrayList<String> findLikedMediaSorted(String mediaName, String sorting) {
+        boolean isAscend = sortWhichWay(sorting);
+        String  sortCriteria = sortCriteria(sorting);
+
+        Bson sort = null;
+
+        if(sortCriteria.equals("_id")) {
+            sort = Aggregates.sort(Sorts.ascending("movie_title"));
+        }
+        else {
+            if (isAscend) {
+                sort = Aggregates.sort(Sorts.ascending(sortCriteria));
+            }
+            if (!isAscend) {
+                sort = Aggregates.sort(Sorts.descending(sortCriteria));
+
+            }
+        }
+
+        MongoCollection<Document> c = database.getCollection(PRODUCTION_COLLECTION);
+
+        Bson mediaFinder = Filters.regex("movie_title", mediaName);
+        Bson onlyForThisUser = Filters.eq("user_id", user_id);
+        Bson onlyNames = Projections.fields(
+                Projections.include("movie_title"),
+                Projections.excludeId());
+
+        Bson combineToProd = Aggregates
+                .lookup(MEDIA_COLLECTION, "movie_id", "movie_id", "media");
+        Bson out = Aggregates.out("liked_media_production");
+        Bson sizeLimiter = Aggregates.limit(20);
+        Bson mediaFinds = Aggregates.match(mediaFinder);
+        Document replaceRootStage = new Document("$replaceRoot",
+                new Document("newRoot",
+                        new Document("$mergeObjects",
+                                Arrays.asList(
+                                        new Document("$arrayElemAt", Arrays.asList("$media", 0)),
+                                        "$$ROOT"
+                                )
+                        )
+                )
+        );
+        Document unwindStage = new Document("$unwind", "$media");
+        Bson combineWatched = Aggregates
+                .lookup(LIKES_COLLECTION, "movie_title", "movie_title", "watched");
+        Document redoRoot = new Document("$replaceRoot",
+                new Document("newRoot",
+                        new Document("$mergeObjects",
+                                Arrays.asList(
+                                        new Document("$arrayElemAt", Arrays.asList("$media", 0)),
+                                        new Document("$arrayElemAt", Arrays.asList("$watched", 0)),
+                                        "$$ROOT"
+                                )
+                        )
+                )
+        );
+        Bson usersWatched = Aggregates.match(onlyForThisUser);
+
+        List<Document> results = c.aggregate(
+                Arrays.asList(
+                        combineToProd,
+                        //unwindStage,
+                        replaceRootStage,
+                        combineWatched,
+                        redoRoot,
+                        mediaFinds,
+                        usersWatched,
+                        sort,
+                        sizeLimiter,
+                        out) ).into(new ArrayList<>());
+
+        ArrayList<String> docList = new ArrayList<String>();
+        for(Document i: results) {
+            try {
+                System.out.printf("%s %n", i.get("user_id"));
+
+                String s = (String) i.get("movie_title");
+                docList.add((String) i.get("movie_title"));
+                System.out.printf("%s %n", i);
+
+
+            }
+            catch(Exception e) {}
+
+        }
+
+
+        return docList;
+    }
+
+    public ArrayList<String> findDetails(String movieName) {
+        MongoCollection<Document> collection = database.getCollection(MEDIA_COLLECTION);
+        Bson mediaFinder = Filters.regex("movie_title", movieName);
+
+        List<Document> docList = new ArrayList<Document>();
+        collection.find(mediaFinder).limit(1)
+                .into(docList);
+
+        Document doc = docList.getFirst();
+        ArrayList<String> details = new ArrayList<String>();
+        details.add((String) doc.get("movie_title"));
+        details.add((String) doc.get("run_time").toString());
+        details.add((String) doc.get("format"));
+
+        if(findWatchedMedia().contains(movieName) == true) {
+            details.add("true");
+        }
+        else
+            details.add("false");
+        if(findLikedMedia().contains(movieName))
+            details.add("true");
+        else
+            details.add("false");
+
+        Document results = mediaAndProductionJoin(movieName, "alpha").getFirst();
+
+        details.add((String) results.get("avg_rating").toString());
+        details.add( (String) results.get("year").toString() );
+
+        MongoCollection<Document> c = database.getCollection(BELONGS);
+        Bson belongs = Filters.regex("movie_id", (String) results.get("movie_id"));
+        List<Document> belongsList = new ArrayList<Document>();
+        c.find(belongs)
+                .into(belongsList);
+        for(Document i: belongsList) {
+            details.add((String) i.get("genres"));
+        }
+
+        return details;
     }
 
     public DatabaseAccessor() {

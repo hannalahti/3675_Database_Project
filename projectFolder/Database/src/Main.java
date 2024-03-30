@@ -67,7 +67,13 @@ public class Main extends Application {
         }
 
         System.out.printf("%n%nSearch Liked Media Example %n");
+        reults = db.deleteLikedMedia("The Merchant of Venice");
+        reults = db.deleteLikedMedia("A Rich Revenge");
+        reults = db.deleteLikedMedia("Across the Continent");
         reults = db.insertLikedMedia("The Merchant of Venice");
+        reults = db.insertLikedMedia("A Rich Revenge");
+        reults = db.insertLikedMedia("Across the Continent");
+        reults = db.insertLikedMedia("An Extraordinary Cab Accident");
         reults = db.insertLikedMedia("The Little Teacher");
         reults = db.deleteLikedMedia("The Little Teacher");
         for(String i : db.findLikedMedia()) {
@@ -90,6 +96,18 @@ public class Main extends Application {
 
         System.out.printf("%n%nSearch Watched Sorted Example %n");
         c = db.findWatchedMediaSorted("c", "alpha");
+        for(String i : c) {
+            System.out.printf("%s %n", i);
+        }
+
+        System.out.printf("%n%nSearch Liked Sorted Example %n");
+        c = db.findLikedMediaSorted("", "alpha");
+        for(String i : c) {
+            System.out.printf("%s %n", i);
+        }
+
+        System.out.printf("%n%nDetails Search Example %n");
+        c = db.findDetails("Welcome Obama");
         for(String i : c) {
             System.out.printf("%s %n", i);
         }
