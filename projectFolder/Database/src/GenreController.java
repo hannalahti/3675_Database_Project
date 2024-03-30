@@ -339,9 +339,11 @@ public class GenreController extends Controller{
         if (findIndex(genre, likedGenres) != -1) {
             super.db.deleteLikedMedia(genre);
             setHeartButton(button, false);
+            likedGenres.remove(genre);
         } else {
             super.db.insertLikedGenre(genre);
             setHeartButton(button, true);
+            likedGenres.add(genre);
         }
     }
 
