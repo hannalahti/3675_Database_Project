@@ -8,6 +8,7 @@ import org.bson.Document;
 import org.bson.conversions.Bson;
 import com.mongodb.client.model.Projections;
 
+import java.sql.Array;
 import java.util.*;
 
 public class DatabaseAccessor {
@@ -1028,6 +1029,98 @@ public class DatabaseAccessor {
 
         return removeDuplicates(docList);
     }
+
+    public ArrayList<String> generateRecommendedMedia() {
+
+
+        //int user_id = 1;
+        Bson onlyForThisUser = Filters.eq("user_id", user_id);
+        List<Document> enjoyedGenres = new ArrayList<>();
+        ArrayList<String> genreNames = new ArrayList<String>();
+
+        database.getCollection(ENJOYS_GENRE_COLLECTION)
+                .find(onlyForThisUser)
+                .into(enjoyedGenres);
+        System.out.printf("genres %n");
+        for(Document i: enjoyedGenres) {
+            genreNames.add( (String)i.get("genre_name") );
+
+        }
+
+        Bson onlyTheseGenres = Filters.in("genres", genreNames);
+        List<Document> possibleMedia = new ArrayList<>();
+        ArrayList<String> movieIDs = new ArrayList<String>();
+        database.getCollection(BELONGS)
+                .find(onlyTheseGenres)
+                .into(possibleMedia);
+        for(Document i: possibleMedia) {
+            movieIDs.add( (String)i.get("movie_id") );
+        }
+
+        Bson idFinder = Filters.in("movie_id", movieIDs);
+        List<Document> possibleMediaNames = new ArrayList<>();
+        ArrayList<String> movieNames = new ArrayList<String>();
+        database.getCollection(MEDIA_COLLECTION)
+                .find(idFinder)
+                .into(possibleMediaNames);
+        for(Document i: possibleMediaNames) {
+            movieNames.add( (String)i.get("movie_title") );
+        }
+
+        Bson watched = Filters.and(onlyForThisUser,
+                Filters.in("movie_title", movieNames));
+        List<Document> watchedMedia = new ArrayList<>();
+        ArrayList<String> watchedMovieNames = new ArrayList<String>();
+        database.getCollection(WATCHED_COLLECTION)
+                .find(watched)
+                .into(watchedMedia);
+        for(Document i: watchedMedia) {
+            watchedMovieNames.add( (String)i.get("movie_title") );
+        }
+
+        movieNames.removeAll(watchedMovieNames); // all unwatched media in genre
+
+        //
+        Bson searchFinder = Filters.in("movie_title", movieNames);
+        List<Document> unwatchedMedia = new ArrayList<>();
+        ArrayList<String> unwatchedMediaIDs = new ArrayList<>();
+
+        database.getCollection(MEDIA_COLLECTION)
+                .find(searchFinder)
+                .into(unwatchedMedia);
+        for(Document i: unwatchedMedia) {
+            unwatchedMediaIDs.add( (String)i.get("movie_id") );
+        }
+
+        Bson sort = Sorts.descending("avg_rating");
+        List<Document> ratingSorted = new ArrayList<>();
+        ArrayList<String> ratingSortedIDs = new ArrayList<>();
+
+        database.getCollection(PRODUCTION_COLLECTION)
+                .find(idFinder)
+                .sort(sort)
+                .limit(20)
+                .into(ratingSorted);
+        for(Document i: ratingSorted) {
+            ratingSortedIDs.add( (String)i.get("movie_id") );
+        }
+
+        List<Document> results = new ArrayList<>();
+        ArrayList<String> docList = new ArrayList<String>();
+        database.getCollection(MEDIA_COLLECTION)
+                .find(Filters.and(idFinder, Filters.in("movie_id", ratingSortedIDs) ) )
+                .into(results);
+        System.out.printf("recommends %n");
+        for(Document i: results) {
+            docList.add( (String)i.get("movie_title") );
+            System.out.printf("%s %n", i);
+        }
+
+
+        return removeDuplicates(docList);
+
+    }
+
     private DatabaseAccessor() {
 
         if(db != null) {

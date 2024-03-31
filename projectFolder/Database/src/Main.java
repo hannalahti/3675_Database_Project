@@ -130,6 +130,7 @@ public class Main extends Application {
         }
 */
         DatabaseAccessor.getDb();
+        //DatabaseAccessor.getDb().generateRecommendedMedia();
         launch(args);
 
     }
