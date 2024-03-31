@@ -320,7 +320,7 @@ public class MyShowsController extends Controller{
 
         String[] selectedFormatsArray;
         ArrayList<String> selectedFormats = getSelectedCheckBoxes(formatCheckBoxes);
-        if(selectedFormats==null) {
+        if(selectedFormats.size()==0) {
             ArrayList<String> formats = getAllFormats();
             selectedFormatsArray = new String[formats.size()];
             for(int i=0;i<formats.size();i++)
