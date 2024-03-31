@@ -288,7 +288,7 @@ public class MyShowsController extends Controller{
     Boolean isWatched;
     String menu;
     String sort;
-    String search;
+    String search=null;
     String selected;
 
     /*
@@ -302,25 +302,35 @@ public class MyShowsController extends Controller{
         String search = searchTextField.getText();
         if(search==null) {
             search="";
-            //return;
         }
 
         String[] selectedGenresArray;
         ArrayList<String> selectedGenres = getSelectedCheckBoxes(genreCheckBoxes);
-        if(selectedGenres==null) {
+        if(selectedGenres.size()==0) {
             ArrayList<String> genres=getAllGenres();
-            selectedGenresArray = genres.toArray(new String[genres.size()]);
+            selectedGenresArray = new String[genres.size()];
+            for(int i=0;i<genres.size();i++)
+                selectedGenresArray[i] = genres.get(i);
         }
-        else selectedGenresArray = selectedGenres.toArray(new String[selectedGenres.size()]);
+        else {
+            selectedGenresArray = new String[selectedGenres.size()];
+            for(int i=0;i<selectedGenres.size();i++)
+                selectedGenresArray[i] = selectedGenres.get(i);
+        }
 
         String[] selectedFormatsArray;
         ArrayList<String> selectedFormats = getSelectedCheckBoxes(formatCheckBoxes);
-        if(selectedFormats==null) {
+        if(selectedFormats.size()==0) {
             ArrayList<String> formats = getAllFormats();
-            selectedFormatsArray = formats.toArray(new String[formats.size()]);
+            selectedFormatsArray = new String[formats.size()];
+            for(int i=0;i<formats.size();i++)
+                selectedFormatsArray[i] = formats.get(i);
         }
-        else
-            selectedFormatsArray = selectedFormats.toArray(new String[selectedFormats.size()]);
+        else {
+            selectedFormatsArray = new String[selectedFormats.size()];
+            for(int i=0;i<selectedFormats.size();i++)
+                selectedFormatsArray[i] = selectedFormats.get(i);
+        }
 
         int yearFrom = (int) yearFromSlider.getValue();
         int yearTo = (int) yearToSlider.getValue();
@@ -336,9 +346,6 @@ public class MyShowsController extends Controller{
 
         ArrayList<String>result =DatabaseAccessor.db.findMediaParamSorted(search, yearFrom, yearTo,
                 runtimeFrom, runtimeTo, ratingFrom, ratingTo, selectedGenresArray, selectedFormatsArray, sort);
-
-        for(int i=0;i<result.size();i++)
-            System.out.println(result.get(i));
         
         showListView(result);
     }
@@ -464,8 +471,11 @@ public class MyShowsController extends Controller{
      * displays list in mediaListView
      */
     void showListView(ArrayList<String> list) {
-        if(list==null)
+        if(list==null) {
+            loadingIndicator.setVisible(false);
+            System.out.println("No results");
             return;
+        }
 
         Media = FXCollections.observableArrayList(list);
         mediaListView.setItems(Media);
@@ -609,8 +619,11 @@ public class MyShowsController extends Controller{
         ArrayList<String> selected = new ArrayList<String>();
 
         for(int i = 0; i < x.size(); i++) {
-            if(x.get(i).isSelected())
+            if(x.get(i).isSelected()) {
                 selected.add(x.get(i).getText());
+                System.out.println("checked: "+x.get(i));
+                System.out.println("added: "+x.get(i));
+            }
         }
         return selected;
     }
@@ -670,8 +683,9 @@ public class MyShowsController extends Controller{
     ArrayList<String> getAllGenres(){
         ArrayList<String> genres = new ArrayList<String>();
 
-        for(int i=0;i<genreCheckBoxes.size();i++)
+        for(int i=0;i<genreCheckBoxes.size();i++) {
             genres.add(genreCheckBoxes.get(i).getText());
+        }
 
         return genres;
     }
