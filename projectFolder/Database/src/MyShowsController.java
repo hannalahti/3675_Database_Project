@@ -301,7 +301,7 @@ public class MyShowsController extends Controller{
 
         String search = searchTextField.getText();
         if(search==null) {
-            //loadingIndicator.setVisible(false);
+            search="";
             return;
         }
 
@@ -349,6 +349,7 @@ public class MyShowsController extends Controller{
         if(isLiked)
             DatabaseAccessor.db.insertLikedMedia(selected);
         else DatabaseAccessor.db.deleteLikedMedia(selected);
+        setLikedList();
     }
 
     @FXML
@@ -375,6 +376,7 @@ public class MyShowsController extends Controller{
         if(isWatched)
             DatabaseAccessor.db.insertWatchedMedia(selected);
         else DatabaseAccessor.db.deleteWatchedMedia(selected);
+        setWatchedList();
     }
 
     public void initialize(){

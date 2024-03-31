@@ -624,7 +624,7 @@
                                           <Insets />
                                        </opaqueInsets>
                                     </ListView>
-                                    <ProgressIndicator fx:id="loadingIndicator" layoutX="181.0" layoutY="163.0" visible="false" />
+                                    <ProgressIndicator fx:id="loadingIndicator" layoutX="117.0" layoutY="160.0" visible="false" />
                                  </children>
                               </AnchorPane>
                           </content>
