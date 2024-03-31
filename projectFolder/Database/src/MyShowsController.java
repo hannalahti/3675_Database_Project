@@ -307,14 +307,11 @@ public class MyShowsController extends Controller{
 
         String[] selectedGenresArray;
         ArrayList<String> selectedGenres = getSelectedCheckBoxes(genreCheckBoxes);
-        if(selectedGenres==null||selectedGenres.get(0).equals("Any")) {
+        if(selectedGenres==null) {
             ArrayList<String> genres=getAllGenres();
             selectedGenresArray = genres.toArray(new String[genres.size()]);
         }
         else selectedGenresArray = selectedGenres.toArray(new String[selectedGenres.size()]);
-
-        for(int i=0;i<selectedGenres.size();i++)
-            System.out.println(selectedGenresArray[i]);
 
         String[] selectedFormatsArray;
         ArrayList<String> selectedFormats = getSelectedCheckBoxes(formatCheckBoxes);
@@ -337,8 +334,13 @@ public class MyShowsController extends Controller{
         if(sort==null)
             sort="default";
 
-        showListView(DatabaseAccessor.db.findMediaParamSorted(search, yearFrom, yearTo,
-                runtimeFrom, runtimeTo, ratingFrom, ratingTo, selectedGenresArray, selectedFormatsArray, sort));
+        ArrayList<String>result =DatabaseAccessor.db.findMediaParamSorted(search, yearFrom, yearTo,
+                runtimeFrom, runtimeTo, ratingFrom, ratingTo, selectedGenresArray, selectedFormatsArray, sort);
+
+        for(int i=0;i<result.size();i++)
+            System.out.println(result.get(i));
+        
+        showListView(result);
     }
 
     @FXML
@@ -612,6 +614,8 @@ public class MyShowsController extends Controller{
     }
 
     void bindCheckBox(CheckBox a, CheckBox b) {
+        if(a==null||b==null)
+            return;
 
         a.selectedProperty().addListener((obs, wasSelected, isNowSelected) -> {
             if (isNowSelected) {
