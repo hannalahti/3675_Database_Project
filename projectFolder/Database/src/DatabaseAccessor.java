@@ -877,14 +877,30 @@ public class DatabaseAccessor {
                                                   double runtimeto,
                                                   double ratingfrom,
                                                   double ratingto,
-                                                  String[] format,
                                                   String[] genre,
+                                                  String[] format,
                                                   String sorting) {
+        System.out.printf("method called %n");
+
         ArrayList<Document> results = new ArrayList<>();//mediaAndProductionJoin(mediaName, sorting, 1);
         boolean isAscend = sortWhichWay(sorting);
         String  sortCriteria = sortCriteria(sorting);
 
+
+        ArrayList<Bson>  f = new ArrayList<Bson>();
+        System.out.printf("formats size: %d %n", format.length);
+        for(String i: format) {
+            System.out.printf("%s %n", i);
+          //  f.add( Filters.regex("format", i) );
+        }
+       // Bson forFind = Filters.or(f);
+        System.out.printf("genres size: %d %n", genre.length);
+        for(String i: genre) {
+            System.out.printf("%s %n", i);
+        }
         Bson searchFinder = Filters.regex("movie_title", mediaName);
+
+
         Bson formatFinder = Filters.in("format", format);
         Bson runtimeFinder= Filters.and(
                 Filters.lt("run_time", runtimeto),
@@ -922,16 +938,19 @@ public class DatabaseAccessor {
         ArrayList<String> mediaIDsTotal = new ArrayList<>();
         List<Document> mediaInCriteria = new ArrayList<>();
         Bson mediaCriteria = Filters.and(
-                searchFinder,
+                searchFinder,// forFind,
                 formatFinder,
                 runtimeFinder
         );
         database.getCollection(MEDIA_COLLECTION)
                 .find(mediaCriteria)
+                //.limit(20)
                 .into(mediaInCriteria);
 
+        System.out.printf("%n%nmedia stuff %n");
         for(Document i: mediaInCriteria) {
-            mediaIDsTotal.add((String) i.get("media_id"));
+            System.out.printf("%s %n", i.get("movie_id"));
+            mediaIDsTotal.add((String) i.get("movie_id"));
         }
 
         ArrayList<String> ProdIDsTotal = new ArrayList<>();
@@ -947,8 +966,10 @@ public class DatabaseAccessor {
                 .find(prodCriteria)
                 .into(prodInCriteria);
 
+        System.out.printf("%n%nproduction stuff %n");
         for(Document i: prodInCriteria) {
-            ProdIDsTotal.add((String) i.get("media_id"));
+            System.out.printf("%s %n", i);
+            ProdIDsTotal.add((String) i.get("movie_id"));
         }
 
         ArrayList<String> genreIDsTotal = new ArrayList<>();
@@ -960,9 +981,10 @@ public class DatabaseAccessor {
         database.getCollection(BELONGS)
                 .find(genreCriteria)
                 .into(genreInCriteria);
-
+        System.out.printf("%n%ngenre stuff %n");
         for(Document i: genreInCriteria) {
-            genreIDsTotal.add((String) i.get("media_id"));
+            System.out.printf("%s %n", i);
+            genreIDsTotal.add((String) i.get("movie_id"));
         }
 
         mediaIDsTotal.retainAll(ProdIDsTotal);
@@ -972,12 +994,12 @@ public class DatabaseAccessor {
 
         if(sortCriteria.equals("avg_rating") || sortCriteria.equals("year")) {
             database.getCollection(PRODUCTION_COLLECTION)
-                    .find( Filters.in("media_id", mediaIDsTotal) )
+                    .find( Filters.in("movie_id", mediaIDsTotal) )
                     .sort(sort)
                     .into(r);
             ArrayList<String> finalStringSet = new ArrayList<>();
             for(Document i: r) {
-                finalStringSet.add((String) i.get("media_id"));
+                finalStringSet.add((String) i.get("movie_id"));
             }
             database.getCollection(MEDIA_COLLECTION)
                     .find(Filters.in("movie_id", finalStringSet))
@@ -1001,6 +1023,8 @@ public class DatabaseAccessor {
             catch(Exception e) {}
 
         }
+
+        System.out.printf("%n%nend of method");
 
         return removeDuplicates(docList);
     }

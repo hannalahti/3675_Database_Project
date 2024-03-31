@@ -302,7 +302,7 @@ public class MyShowsController extends Controller{
         String search = searchTextField.getText();
         if(search==null) {
             search="";
-            return;
+            //return;
         }
 
         String[] selectedGenresArray;
