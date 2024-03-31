@@ -470,6 +470,7 @@ public class MyShowsController extends Controller{
         sort = s;
         ObservableList<String> media;
         System.out.println(menu+sort);
+        if(search == null) search = "";
         if(menu.equals("search"))
             media = FXCollections.observableArrayList( DatabaseAccessor.db.findMediaSorted(search, s) );
         else if(menu.equals("liked"))
