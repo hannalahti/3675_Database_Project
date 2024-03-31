@@ -297,23 +297,48 @@ public class MyShowsController extends Controller{
     @FXML
     void applyButtonPressed(ActionEvent event) {
 
+        loadingIndicator.setVisible(true);
+
         String search = searchTextField.getText();
+        if(search==null) {
+            //loadingIndicator.setVisible(false);
+            return;
+        }
 
+        String[] selectedGenresArray;
         ArrayList<String> selectedGenres = getSelectedCheckBoxes(genreCheckBoxes);
+        if(selectedGenres==null||selectedGenres.get(0).equals("Any")) {
+            ArrayList<String> genres=getAllGenres();
+            selectedGenresArray = genres.toArray(new String[genres.size()]);
+        }
+        else selectedGenresArray = selectedGenres.toArray(new String[selectedGenres.size()]);
 
+        for(int i=0;i<selectedGenres.size();i++)
+            System.out.println(selectedGenresArray[i]);
+
+        String[] selectedFormatsArray;
         ArrayList<String> selectedFormats = getSelectedCheckBoxes(formatCheckBoxes);
+        if(selectedFormats==null) {
+            ArrayList<String> formats = getAllFormats();
+            selectedFormatsArray = formats.toArray(new String[formats.size()]);
+        }
+        else
+            selectedFormatsArray = selectedFormats.toArray(new String[selectedFormats.size()]);
 
         int yearFrom = (int) yearFromSlider.getValue();
         int yearTo = (int) yearToSlider.getValue();
 
-        int runtimeFrom = (int) runtimeFromSlider.getValue();
-        int runtimeTo = (int) runtimeToSlider.getValue();
+        double runtimeFrom = runtimeFromSlider.getValue();
+        double runtimeTo = runtimeToSlider.getValue();
 
-        int ratingFrom = (int) ratingFromSlider.getValue();
-        int ratingTo = (int) ratingToSlider.getValue();
+        double ratingFrom = ratingFromSlider.getValue();
+        double ratingTo = ratingToSlider.getValue();
 
-        showListView(filteredQuery(search, selectedGenres, selectedFormats, yearFrom, yearTo,
-                runtimeFrom, runtimeTo, ratingFrom, ratingTo));
+        if(sort==null)
+            sort="default";
+
+        showListView(DatabaseAccessor.db.findMediaParamSorted(search, yearFrom, yearTo,
+                runtimeFrom, runtimeTo, ratingFrom, ratingTo, selectedGenresArray, selectedFormatsArray, sort));
     }
 
     @FXML
@@ -365,6 +390,7 @@ public class MyShowsController extends Controller{
         mediaListView.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<String>() {
             @Override
             public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
+                loadingIndicator.setVisible(true);
                 selected=newValue;
                 System.out.println(selected);
                 setMediaView(selected);
@@ -374,6 +400,7 @@ public class MyShowsController extends Controller{
         tabPane.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<Tab>(){
             @Override
             public void changed(ObservableValue<? extends Tab> observable, Tab oldValue, Tab newValue) {
+                loadingIndicator.setVisible(true);
                 sort="default";
                 mediaListView.setItems(null);
                 scrollPane.setDisable(true);
@@ -426,33 +453,7 @@ public class MyShowsController extends Controller{
         searchTextField.setText(null);
         searchButton.setVisible(true);
         searchTextField.setVisible(true);
-    }
-
-    ArrayList<String> query(){
-        //ObservableList<String> media = FXCollections.observableArrayList( someFunctionToRetrieveData( menu, search, sort ) )
-        //  menu= liked/watched
-        //  search= in search bar
-        //  sort= alphabetical / ratingHigh / ratingLow / yearNewest / yearOldest / runtimeLongest / runtimeShortest
-
-        return null;
-    }
-
-    ArrayList<String> filteredQuery(String search, ArrayList<String> selectedGenres, ArrayList<String> selectedFormats, int yearFrom,
-                                    int yearTo, int runtimeFrom, int runtimeTo, int ratingFrom, int ratingTo) {
-
-        /*
-         * Movie title like "%search%", AND
-         * any with "selected genres" (make sure to only get unique), AND
-         * any with "selected formats", AND
-         * "yearFrom" <= year <= "yearTo", AND
-         * "runtimeFrom" <= runtime <= "runtimeTo", AND
-         * "ratingFrom" <= rating <= "ratingTo"
-         */
-
-        //query();
-
-        //return results in arraylist<string> form
-        return null;
+        loadingIndicator.setVisible(false);
     }
 
     /*
@@ -464,6 +465,7 @@ public class MyShowsController extends Controller{
 
         Media = FXCollections.observableArrayList(list);
         mediaListView.setItems(Media);
+        loadingIndicator.setVisible(false);
     }
 
     void sortMedia(String s){
@@ -478,6 +480,7 @@ public class MyShowsController extends Controller{
         else media = FXCollections.observableArrayList( DatabaseAccessor.db.findWatchedMediaSorted(search, s) );
 
         mediaListView.setItems(media);
+        loadingIndicator.setVisible(false);
     }
 
     void resetPage(){
@@ -506,6 +509,7 @@ public class MyShowsController extends Controller{
         searchTextField.setVisible(false);
         //ObservableList<String> recommendedList = FXCollections.observableArrayList( someFunctionToGetRecommendedStringArrayList() )
         //mediaListView.setItems(recommendedList);
+        loadingIndicator.setVisible(false);
     }
 
     void setLikedList(){
@@ -515,6 +519,7 @@ public class MyShowsController extends Controller{
         searchTextField.setVisible(false);
         ObservableList<String> likedList = FXCollections.observableArrayList(DatabaseAccessor.db.findLikedMedia());
         mediaListView.setItems(likedList);
+        loadingIndicator.setVisible(false);
     }
 
     void setWatchedList(){
@@ -524,6 +529,7 @@ public class MyShowsController extends Controller{
         searchTextField.setVisible(false);
         ObservableList<String> watchedList = FXCollections.observableArrayList(DatabaseAccessor.db.findWatchedMedia());
         mediaListView.setItems(watchedList);
+        loadingIndicator.setVisible(false);
     }
 
     /*
@@ -568,31 +574,19 @@ public class MyShowsController extends Controller{
         ArrayList<String> info = DatabaseAccessor.db.findDetails(selected);
         if(info==null)
             return;
-        for(int i=0;i<info.size();i++)
-            System.out.println(info.get(i));
-        System.out.println(info.get(0));
         titleText.setText(info.get(0));
-        System.out.println(info.get(1));
-
         runtimeText.setText(info.get(1));
-        System.out.println(info.get(2));
-
         formatText.setText(info.get(2));
-        System.out.println(info.get(3));
 
         buttonBox.setVisible(true);
         setWatchedButton(info.get(3));
         System.out.println(info.get(4));
 
         setLikedButton(info.get(4));
-        System.out.println(info.get(5));
 
         ratingText.setText(info.get(5));
-        System.out.println(info.get(6));
 
         yearText.setText(info.get(6));
-        System.out.println(info.get(7));
-
 
         String genres = info.get(7);
         //concatenating all genres into one string
@@ -600,6 +594,7 @@ public class MyShowsController extends Controller{
             genres = genres.concat(", " + info.get(i));
 
         genreText.setText(genres);
+        loadingIndicator.setVisible(false);
     }
 
     /*
@@ -617,12 +612,12 @@ public class MyShowsController extends Controller{
     }
 
     void bindCheckBox(CheckBox a, CheckBox b) {
+
         a.selectedProperty().addListener((obs, wasSelected, isNowSelected) -> {
             if (isNowSelected) {
                 b.setSelected(false);
             }
         });
-
         b.selectedProperty().addListener((obs, wasSelected, isNowSelected) -> {
             if (isNowSelected) {
                 a.setSelected(false);
@@ -631,10 +626,8 @@ public class MyShowsController extends Controller{
     }
 
     void bindAllCheckBoxes() {
-
         for(int i=0; i<genreCheckBoxes.size(); i++)
             bindCheckBox(anyGenreCheckBox, genreCheckBoxes.get(i));
-
         for(int i=0; i<formatCheckBoxes.size(); i++)
             bindCheckBox(anyFormatCheckBox, formatCheckBoxes.get(i));
     }
@@ -649,6 +642,32 @@ public class MyShowsController extends Controller{
         Bindings.bindBidirectional(runtimeToTextField.textProperty(), runtimeToSlider.valueProperty(), new NumberStringConverter());
         Bindings.bindBidirectional(ratingFromTextField.textProperty(), ratingFromSlider.valueProperty(), new NumberStringConverter());
         Bindings.bindBidirectional(ratingToTextField.textProperty(), ratingToSlider.valueProperty(), new NumberStringConverter());
+    }
+
+    ArrayList<String> getAllFormats(){
+        ArrayList<String> allFormats = new ArrayList<String>();
+        allFormats.add("movie");
+        allFormats.add("short");
+        allFormats.add("tvEpisode");
+        allFormats.add("tvMiniSeries");
+        allFormats.add("tvMovie");
+        allFormats.add("tvPilot");
+        allFormats.add("tvSeries");
+        allFormats.add("tvShort");
+        allFormats.add("tvSpecial");
+        allFormats.add("video");
+        allFormats.add("videoGame");
+
+        return allFormats;
+    }
+
+    ArrayList<String> getAllGenres(){
+        ArrayList<String> genres = new ArrayList<String>();
+
+        for(int i=0;i<genreCheckBoxes.size();i++)
+            genres.add(genreCheckBoxes.get(i).getText());
+
+        return genres;
     }
 
     /*
@@ -682,7 +701,6 @@ public class MyShowsController extends Controller{
         genreCheckBoxes.add(adultGenreCheckBox);
         genreCheckBoxes.add(adventureGenreCheckBox);
         genreCheckBoxes.add(animationGenreCheckBox);
-        genreCheckBoxes.add(anyGenreCheckBox);
         genreCheckBoxes.add(biographyGenreCheckBox);
         genreCheckBoxes.add(comedyGenreCheckBox);
         genreCheckBoxes.add(crimeGenreCheckBox);

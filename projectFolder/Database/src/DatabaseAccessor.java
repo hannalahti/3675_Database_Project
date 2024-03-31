@@ -1,15 +1,9 @@
 
-
-
-import static com.mongodb.client.model.Filters.eq;
-import static com.mongodb.client.model.mql.MqlValues.current;
-
 import com.mongodb.Block;
 import com.mongodb.client.*;
 import com.mongodb.client.model.Aggregates;
 import com.mongodb.client.model.Filters;
 import com.mongodb.client.model.Sorts;
-import com.mongodb.client.model.mql.MqlDocument;
 import org.bson.Document;
 import org.bson.conversions.Bson;
 import com.mongodb.client.model.Projections;
@@ -548,8 +542,8 @@ public class DatabaseAccessor {
                     //.sort( (Sorts.ascending("movie_title")) )
                     .into(t800);
             //for(Document i: t800) {
-                //System.out.printf("%s %n", i);
-           // }
+            //System.out.printf("%s %n", i);
+            // }
             List<Document> r = new ArrayList<>();
             ArrayList<String> movieIDs = new ArrayList<String>();
             r.addAll(t1);

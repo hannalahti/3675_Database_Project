@@ -15,7 +15,6 @@ public class Controller {
     private Parent root;
     public void switchWindow(ActionEvent event, String filename, Button button){
         try {
-            //System.out.printf("user_id : %d", db.user_id);
             stage = (Stage) button.getScene().getWindow();
             root = FXMLLoader.load(getClass().getResource(filename));
             Scene scene = new Scene(root);

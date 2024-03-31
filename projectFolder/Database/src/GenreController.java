@@ -228,9 +228,7 @@ public class GenreController extends Controller{
     }
 
     @FXML
-    void likeButtonPressedDocumentary(ActionEvent event) {
-        handleLikeButtonAction("Documentary", likeButtonDocumentary);
-    }
+    void likeButtonPressedDocumentary(ActionEvent event) { handleLikeButtonAction("Documentary", likeButtonDocumentary); }
 
     @FXML
     void likeButtonPressedDrama(ActionEvent event) {
@@ -293,9 +291,7 @@ public class GenreController extends Controller{
     }
 
     @FXML
-    void likeButtonPressedRomance(ActionEvent event) {
-        handleLikeButtonAction("Romance", likeButtonRomance);
-    }
+    void likeButtonPressedRomance(ActionEvent event) { handleLikeButtonAction("Romance", likeButtonRomance); }
 
     @FXML
     void likeButtonPressedSciFi(ActionEvent event) {
@@ -318,9 +314,7 @@ public class GenreController extends Controller{
     }
 
     @FXML
-    void likeButtonPressedThriller(ActionEvent event) {
-        handleLikeButtonAction("Thriller", likeButtonThriller);
-    }
+    void likeButtonPressedThriller(ActionEvent event) { handleLikeButtonAction("Thriller", likeButtonThriller); }
 
     @FXML
     void likeButtonPressedWar(ActionEvent event) {
