@@ -305,11 +305,28 @@ public class MyShowsController extends Controller{
         showListView(result);
     }
 
+    boolean displayAlert() {
+
+        Alert alert = new Alert(Alert.AlertType.WARNING,"Results may be too large to display properly. \nProceed?\n", ButtonType.CANCEL, ButtonType.YES);
+
+        alert.setHeaderText("WARNING");
+
+        alert.showAndWait();
+
+        if (alert.getResult() == ButtonType.YES) //YES selected
+            return true;
+
+        loadingIndicator.setVisible(false);
+        return false;	//CANCEL selected
+    }
+
     ArrayList applyFilters(){
         loadingIndicator.setVisible(true);
 
         String search = searchTextField.getText();
         if(search==null) {
+            if(!displayAlert())
+                return null;
             search="";
         }
 
@@ -375,6 +392,8 @@ public class MyShowsController extends Controller{
     void searchButtonPressed(ActionEvent event) {
         loadingIndicator.setVisible(true);
         search = searchTextField.getText();
+        if(search==null)
+            search="";
         ObservableList<String> media = FXCollections.observableArrayList(DatabaseAccessor.db.findMedia(search));
         mediaListView.setItems(media);
         loadingIndicator.setVisible(false);
@@ -498,8 +517,7 @@ public class MyShowsController extends Controller{
         System.out.println(menu+sort);
         if(search == null) search = "";
         switch(menu){
-            case "search" -> media = FXCollections.observableArrayList( DatabaseAccessor.db.findMediaSorted(search, s) );
-            //buuuttt if there's filters applied it would make sense to do both filters and sorting and use: FXCollections.observableArrayList( applyFilters() );
+            case "search" -> media = FXCollections.observableArrayList( applyFilters() );
             case "liked" -> media = FXCollections.observableArrayList( DatabaseAccessor.db.findLikedMediaSorted(search, s) );
             case "watched" -> media = FXCollections.observableArrayList( DatabaseAccessor.db.findWatchedMediaSorted(search, s) );
             case "recommended" -> media=null;
