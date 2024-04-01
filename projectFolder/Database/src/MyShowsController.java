@@ -297,6 +297,12 @@ public class MyShowsController extends Controller{
     @FXML
     void applyButtonPressed(ActionEvent event) {
 
+        ArrayList<String>result = applyFilters();
+
+        showListView(result);
+    }
+
+    ArrayList applyFilters(){
         loadingIndicator.setVisible(true);
 
         String search = searchTextField.getText();
@@ -344,10 +350,8 @@ public class MyShowsController extends Controller{
         if(sort==null)
             sort="default";
 
-        ArrayList<String>result =DatabaseAccessor.db.findMediaParamSorted(search, yearFrom, yearTo,
+        return DatabaseAccessor.db.findMediaParamSorted(search, yearFrom, yearTo,
                 runtimeFrom, runtimeTo, ratingFrom, ratingTo, selectedGenresArray, selectedFormatsArray, sort);
-        
-        showListView(result);
     }
 
     @FXML
@@ -396,6 +400,7 @@ public class MyShowsController extends Controller{
 
         menu="search";
         sort="default";
+        search=null;
 
         //listener for new selection on medialistview
         mediaListView.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<String>() {
@@ -434,27 +439,27 @@ public class MyShowsController extends Controller{
         });
         sortRatingHigh.setOnAction((e)-> {
             sortMedia("ratingHigh");
-            sortMenu.setText("Rating: high to low");
+            sortMenu.textProperty().set("Rating: high to low");
         });
         sortRatingLow.setOnAction((e)-> {
             sortMedia("ratingLow");
-            sortMenu.setText("Rating: low to high");
+            sortMenu.textProperty().set("Rating: low to high");
         });
         sortYearNewest.setOnAction((e)-> {
             sortMedia("yearNewest");
-            sortMenu.setText("Year: newest");
+            sortMenu.textProperty().set("Year: newest");
         });
         sortYearOldest.setOnAction((e)-> {
             sortMedia("yearOldest");
-            sortMenu.setText("Year: oldest");
+            sortMenu.textProperty().set("Year: oldest");
         });
         sortRuntimeLongest.setOnAction((e)-> {
             sortMedia("runtimeLongest");
-            sortMenu.setText("Runtime: longest");
+            sortMenu.textProperty().set("Runtime: longest");
         });
         sortRuntimeShortest.setOnAction((e)-> {
             sortMedia("runtimeShortest");
-            sortMenu.setText("Runtime: shortest");
+            sortMenu.textProperty().set("Runtime: shortest");
         });
     }
 
@@ -464,6 +469,7 @@ public class MyShowsController extends Controller{
         searchTextField.setText(null);
         searchButton.setVisible(true);
         searchTextField.setVisible(true);
+        setSortMenu(true);
         loadingIndicator.setVisible(false);
     }
 
@@ -484,15 +490,19 @@ public class MyShowsController extends Controller{
 
     void sortMedia(String s){
         sort = s;
-        ObservableList<String> media;
+        ObservableList<String> media=null;
         System.out.println(menu+sort);
         if(search == null) search = "";
-        if(menu.equals("search"))
-            media = FXCollections.observableArrayList( DatabaseAccessor.db.findMediaSorted(search, s) );
-        else if(menu.equals("liked"))
-            media = FXCollections.observableArrayList( DatabaseAccessor.db.findLikedMediaSorted(search, s) );
-        else media = FXCollections.observableArrayList( DatabaseAccessor.db.findWatchedMediaSorted(search, s) );
-
+        switch(menu){
+            case "search" -> media = FXCollections.observableArrayList( DatabaseAccessor.db.findMediaSorted(search, s) );
+            //buuuttt if there's filters applied it would make sense to do both filters and sorting and use: FXCollections.observableArrayList( applyFilters() );
+            case "liked" -> media = FXCollections.observableArrayList( DatabaseAccessor.db.findLikedMediaSorted(search, s) );
+            case "watched" -> media = FXCollections.observableArrayList( DatabaseAccessor.db.findWatchedMediaSorted(search, s) );
+            case "recommended" -> media=null;
+                //after implementation use: media = FXCollections.observableArrayList( DatabaseAccessor.db.findRecommendedMediaSorted(search, s) );
+        }
+        if(media==null)
+            return;
         mediaListView.setItems(media);
         loadingIndicator.setVisible(false);
     }
@@ -516,13 +526,24 @@ public class MyShowsController extends Controller{
         buttonBox.setVisible(false);
     }
 
+    void setSortMenu(Boolean b){
+        sortAlphabetical.setVisible(b);
+        sortRuntimeShortest.setVisible(b);
+        sortRuntimeLongest.setVisible(b);
+        //sortRatingHigh.setVisible(b);
+        sortRatingLow.setVisible(b);
+        sortYearNewest.setVisible(b);
+        sortYearOldest.setVisible(b);
+    }
+
     void setRecommendedList(){
         menu="recommended";
         sort="default";
         searchButton.setVisible(false);
         searchTextField.setVisible(false);
-        //ObservableList<String> recommendedList = FXCollections.observableArrayList( someFunctionToGetRecommendedStringArrayList() )
-        //mediaListView.setItems(recommendedList);
+        setSortMenu(false);
+        ObservableList<String> recommendedList = FXCollections.observableArrayList( DatabaseAccessor.db.generateRecommendedMedia() );
+        mediaListView.setItems(recommendedList);
         loadingIndicator.setVisible(false);
     }
 
@@ -531,6 +552,7 @@ public class MyShowsController extends Controller{
         sort="default";
         searchButton.setVisible(false);
         searchTextField.setVisible(false);
+        setSortMenu(true);
         ObservableList<String> likedList = FXCollections.observableArrayList(DatabaseAccessor.db.findLikedMedia());
         mediaListView.setItems(likedList);
         loadingIndicator.setVisible(false);
@@ -541,6 +563,7 @@ public class MyShowsController extends Controller{
         sort="default";
         searchButton.setVisible(false);
         searchTextField.setVisible(false);
+        setSortMenu(true);
         ObservableList<String> watchedList = FXCollections.observableArrayList(DatabaseAccessor.db.findWatchedMedia());
         mediaListView.setItems(watchedList);
         loadingIndicator.setVisible(false);
