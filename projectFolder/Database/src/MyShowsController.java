@@ -140,6 +140,9 @@ public class MyShowsController extends Controller{
     private SplitMenuButton sortMenu;
 
     @FXML
+    private SplitMenuButton sortMenu2;
+
+    @FXML
     private CheckBox sportGenreCheckBox;
 
     @FXML
@@ -397,6 +400,7 @@ public class MyShowsController extends Controller{
         bindTextFieldWithSlider();
         bindAllCheckBoxes();
         setSearchPage();
+        setSliderListeners();
 
         menu="search";
         sort="default";
@@ -527,13 +531,8 @@ public class MyShowsController extends Controller{
     }
 
     void setSortMenu(Boolean b){
-        sortAlphabetical.setVisible(b);
-        sortRuntimeShortest.setVisible(b);
-        sortRuntimeLongest.setVisible(b);
-        //sortRatingHigh.setVisible(b);
-        sortRatingLow.setVisible(b);
-        sortYearNewest.setVisible(b);
-        sortYearOldest.setVisible(b);
+        sortMenu2.setVisible(b);
+        sortMenu.setVisible(!b);
     }
 
     void setRecommendedList(){
@@ -684,6 +683,41 @@ public class MyShowsController extends Controller{
         Bindings.bindBidirectional(runtimeToTextField.textProperty(), runtimeToSlider.valueProperty(), new NumberStringConverter());
         Bindings.bindBidirectional(ratingFromTextField.textProperty(), ratingFromSlider.valueProperty(), new NumberStringConverter());
         Bindings.bindBidirectional(ratingToTextField.textProperty(), ratingToSlider.valueProperty(), new NumberStringConverter());
+    }
+
+    void setSliderListeners(){
+        ratingFromSlider.valueProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue.intValue() > ratingToSlider.getValue()) {
+                ratingFromSlider.setValue(ratingToSlider.getValue());
+            }
+        });
+        ratingToSlider.valueProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue.intValue() < ratingFromSlider.getValue()) {
+                ratingToSlider.setValue(ratingFromSlider.getValue());
+            }
+        });
+
+        runtimeFromSlider.valueProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue.intValue() > runtimeToSlider.getValue()) {
+                runtimeFromSlider.setValue(runtimeToSlider.getValue());
+            }
+        });
+        runtimeToSlider.valueProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue.intValue() < runtimeFromSlider.getValue()) {
+                runtimeToSlider.setValue(runtimeFromSlider.getValue());
+            }
+        });
+
+        yearFromSlider.valueProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue.intValue() > yearToSlider.getValue()) {
+                yearFromSlider.setValue(yearToSlider.getValue());
+            }
+        });
+        yearToSlider.valueProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue.intValue() < yearFromSlider.getValue()) {
+                yearToSlider.setValue(yearFromSlider.getValue());
+            }
+        });
     }
 
     ArrayList<String> getAllFormats(){

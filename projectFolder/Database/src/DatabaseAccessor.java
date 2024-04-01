@@ -892,9 +892,9 @@ public class DatabaseAccessor {
         System.out.printf("formats size: %d %n", format.length);
         for(String i: format) {
             System.out.printf("%s %n", i);
-          //  f.add( Filters.regex("format", i) );
+            //  f.add( Filters.regex("format", i) );
         }
-       // Bson forFind = Filters.or(f);
+        // Bson forFind = Filters.or(f);
         System.out.printf("genres size: %d %n", genre.length);
         for(String i: genre) {
             System.out.printf("%s %n", i);

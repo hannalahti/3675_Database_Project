@@ -646,6 +646,11 @@
                               <Insets left="3.0" top="15.0" />
                            </GridPane.margin>
                         </SplitMenuButton>
+                        <SplitMenuButton fx:id="sortMenu2" alignment="CENTER" minWidth="-Infinity" mnemonicParsing="false" text="Rating: high to low" textAlignment="RIGHT" visible="false" GridPane.columnIndex="2">
+                           <GridPane.margin>
+                              <Insets left="3.0" top="15.0" />
+                           </GridPane.margin>
+                        </SplitMenuButton>
                      </children>
                      <padding>
                         <Insets right="30.0" />
