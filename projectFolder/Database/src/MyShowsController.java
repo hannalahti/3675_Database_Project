@@ -380,7 +380,8 @@ public class MyShowsController extends Controller{
         if(isLiked)
             DatabaseAccessor.db.insertLikedMedia(selected);
         else DatabaseAccessor.db.deleteLikedMedia(selected);
-        setLikedList();
+        if(menu.equals("liked"))
+            setLikedList();
     }
 
     @FXML
@@ -409,7 +410,8 @@ public class MyShowsController extends Controller{
         if(isWatched)
             DatabaseAccessor.db.insertWatchedMedia(selected);
         else DatabaseAccessor.db.deleteWatchedMedia(selected);
-        setWatchedList();
+        if(menu.equals("watched"))
+            setWatchedList();
     }
 
     public void initialize(){
