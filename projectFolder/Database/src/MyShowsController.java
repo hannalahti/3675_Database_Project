@@ -531,8 +531,8 @@ public class MyShowsController extends Controller{
     }
 
     void setSortMenu(Boolean b){
-        sortMenu2.setVisible(b);
-        sortMenu.setVisible(!b);
+        sortMenu2.setVisible(!b);
+        sortMenu.setVisible(b);
     }
 
     void setRecommendedList(){
